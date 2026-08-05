@@ -16,11 +16,12 @@
   {% if items %}
   <div class="manage-table-wrap">
     <table class="manage-table">
-      <thead><tr><th>Summary</th><th>Order</th><th></th></tr></thead>
+      <thead><tr><th>Summary</th><th>Visibility</th><th>Order</th><th></th></tr></thead>
       <tbody>
         {% for item in items %}
         <tr>
           <td>{{ item }}</td>
+          <td>{% if key == 'experience' %}{% if item.is_visible %}Visible{% else %}Hidden{% endif %}{% else %}Always visible{% endif %}</td>
           <td>{{ item.order }}</td>
           <td class="manage-actions">
             <a href="{% url 'portfolio:manage_content_edit' key item.pk %}">Edit</a>

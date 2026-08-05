@@ -20,6 +20,10 @@
       <div class="form-row">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
+        {% if field.field.widget.input_type == 'file' and field.value %}
+          <p class="field-hint">Current file: <a href="/media/{{ field.value }}" target="_blank" rel="noopener">/media/{{ field.value }}</a></p>
+          <img class="upload-preview" src="/media/{{ field.value }}" alt="Current {{ field.label }}">
+        {% endif %}
         {% if field.help_text %}<p class="field-hint">{{ field.help_text }}</p>{% endif %}
         {{ field.errors }}
       </div>

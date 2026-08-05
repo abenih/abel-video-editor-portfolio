@@ -51,6 +51,7 @@ class SiteProfileForm(StyledFormMixin, forms.ModelForm):
         fields = [
             'name', 'alias', 'title', 'tagline', 'bio', 'highlight', 'since',
             'location', 'phone', 'email', 'instagram', 'facebook', 'telegram',
+            'show_experience_section',
             'availability_text', 'hero_primary_cta_label', 'hero_secondary_cta_label',
             'theme_bg', 'theme_bg_alt', 'theme_text', 'theme_text_muted',
             'theme_accent', 'theme_accent_2', 'theme_accent_3',
@@ -109,7 +110,7 @@ class ToolForm(StyledFormMixin, forms.ModelForm):
 class ExperienceForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = ExperienceEntry
-        fields = ['role', 'org', 'period', 'description', 'order']
+        fields = ['role', 'org', 'period', 'description', 'is_visible', 'order']
         widgets = {
             'period': forms.TextInput(attrs={'placeholder': 'e.g. 2022 — Present'}),
             'description': forms.Textarea(attrs={'rows': 3}),

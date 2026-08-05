@@ -34,7 +34,7 @@ def home(request):
         'stats': Stat.objects.all(),
         'tools': Tool.objects.all(),
         'skills': SkillGroup.objects.prefetch_related('items').all(),
-        'experience': ExperienceEntry.objects.all(),
+        'experience': ExperienceEntry.objects.filter(is_visible=True),
         'projects': Project.objects.all(),
         'categories': Project.CATEGORY_CHOICES,
     }

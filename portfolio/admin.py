@@ -29,6 +29,7 @@ class SiteProfileAdmin(admin.ModelAdmin):
         ('Identity', {'fields': ('name', 'alias', 'title', 'tagline')}),
         ('About section', {'fields': ('bio', 'highlight', 'since')}),
         ('Hero copy', {'fields': ('availability_text', 'hero_primary_cta_label', 'hero_secondary_cta_label')}),
+        ('Section visibility', {'fields': ('show_experience_section',)}),
         ('Theme colors', {
             'fields': (
                 'theme_bg', 'theme_bg_alt', 'theme_text', 'theme_text_muted',
@@ -93,5 +94,5 @@ class SkillGroupAdmin(admin.ModelAdmin):
 
 @admin.register(ExperienceEntry)
 class ExperienceEntryAdmin(admin.ModelAdmin):
-    list_display = ('role', 'org', 'period', 'order')
-    list_editable = ('order',)
+    list_display = ('role', 'org', 'period', 'is_visible', 'order')
+    list_editable = ('is_visible', 'order')

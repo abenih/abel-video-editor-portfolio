@@ -160,6 +160,7 @@ class SiteProfile(models.Model):
     instagram = models.CharField(max_length=100, blank=True, help_text='Username only, without @.')
     facebook = models.CharField(max_length=100, blank=True, help_text='Username only.')
     telegram = models.CharField(max_length=100, blank=True, help_text='Username only.')
+    show_experience_section = models.BooleanField(default=True, help_text='Show or hide the Experience section.')
     availability_text = models.CharField(max_length=120, default='Available for freelance work')
     hero_primary_cta_label = models.CharField(max_length=50, default='View My Work')
     hero_secondary_cta_label = models.CharField(max_length=50, default='Get In Touch')
@@ -195,6 +196,7 @@ class SiteProfile(models.Model):
         validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
         help_text='Second image in the about photo pair.',
     )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Site Profile'
@@ -280,6 +282,7 @@ class ExperienceEntry(models.Model):
     org = models.CharField(max_length=200, blank=True)
     period = models.CharField(max_length=100, help_text='e.g. 2022 — Present')
     description = models.TextField(blank=True)
+    is_visible = models.BooleanField(default=True, help_text='Uncheck to hide this role from the public homepage.')
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

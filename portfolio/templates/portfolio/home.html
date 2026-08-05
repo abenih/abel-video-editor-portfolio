@@ -33,20 +33,20 @@
       <div class="hero-photo-ring"></div>
       <div class="hero-cutout">
         {% if profile.hero_cutout_image %}
-          <img src="{{ profile.hero_cutout_image.url }}" alt="{{ profile.name }}" loading="lazy">
+          <img src="{{ profile.hero_cutout_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy">
         {% else %}
-          <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel with camera" loading="lazy">
+          <img src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" loading="lazy">
         {% endif %}
       </div>
       <div class="hero-photo-fallback">AS</div>
       {% if profile.hero_main_image %}
-        <img class="hero-main-photo" src="{{ profile.hero_main_image.url }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+        <img class="hero-main-photo" src="{{ profile.hero_main_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
       {% else %}
-        <img class="hero-main-photo" src="/media/projects/gallery/g1_08.jpg" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+        <img class="hero-main-photo" src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
       {% endif %}
       <div class="hero-photo-badge">
         {% if profile.hero_badge_image %}
-          <img src="{{ profile.hero_badge_image.url }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+          <img src="{{ profile.hero_badge_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
         {% else %}
           <img src="{% static 'portfolio/images/profile.jpg' %}" alt="Abel portrait" loading="lazy" onerror="this.style.display='none'">
         {% endif %}
@@ -74,16 +74,16 @@
       <div class="about-photo-stack" aria-label="Editor portraits">
         <figure class="about-photo-card about-photo-main">
           {% if profile.about_main_image %}
-            <img src="{{ profile.about_main_image.url }}" alt="{{ profile.name }}" loading="lazy">
+            <img src="{{ profile.about_main_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy">
           {% else %}
-            <img src="/media/projects/gallery/g1_07.jpg" alt="Abel studio portrait" loading="lazy">
+            <img src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" loading="lazy">
           {% endif %}
         </figure>
         <figure class="about-photo-card about-photo-side">
           {% if profile.about_side_image %}
-            <img src="{{ profile.about_side_image.url }}" alt="{{ profile.name }}" loading="lazy">
+            <img src="{{ profile.about_side_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy">
           {% else %}
-            <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel holding camera" loading="lazy">
+            <img src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" loading="lazy">
           {% endif %}
         </figure>
       </div>
@@ -203,6 +203,7 @@
   {% endif %}
 </section>
 
+{% if profile.show_experience_section and experience %}
 <section class="experience" id="experience">
   <div class="section-head reveal">
     <span class="ghost-number" aria-hidden="true">04</span>
@@ -222,5 +223,6 @@
     {% endfor %}
   </div>
 </section>
+{% endif %}
 
 {% endblock %}
