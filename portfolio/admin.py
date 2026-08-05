@@ -30,6 +30,12 @@ class SiteProfileAdmin(admin.ModelAdmin):
         ('About section', {'fields': ('bio', 'highlight', 'since')}),
         ('Contact details', {'fields': ('location', 'phone', 'email')}),
         ('Social handles', {'fields': ('instagram', 'facebook', 'telegram')}),
+        ('Homepage images', {
+            'fields': (
+                'hero_main_image', 'hero_badge_image', 'hero_cutout_image',
+                'about_main_image', 'about_side_image',
+            )
+        }),
     )
 
     def has_add_permission(self, request):

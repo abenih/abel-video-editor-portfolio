@@ -94,7 +94,7 @@ def manage_projects(request):
 def manage_profile(request):
     profile = SiteProfile.load()
     if request.method == 'POST':
-        form = SiteProfileForm(request.POST, instance=profile)
+        form = SiteProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated.')

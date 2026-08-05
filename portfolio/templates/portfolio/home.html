@@ -32,12 +32,24 @@
     <div class="hero-photo reveal">
       <div class="hero-photo-ring"></div>
       <div class="hero-cutout">
-        <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel with camera" loading="lazy">
+        {% if profile.hero_cutout_image %}
+          <img src="{{ profile.hero_cutout_image.url }}" alt="{{ profile.name }}" loading="lazy">
+        {% else %}
+          <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel with camera" loading="lazy">
+        {% endif %}
       </div>
       <div class="hero-photo-fallback">AS</div>
-      <img class="hero-main-photo" src="/media/projects/gallery/g1_08.jpg" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+      {% if profile.hero_main_image %}
+        <img class="hero-main-photo" src="{{ profile.hero_main_image.url }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+      {% else %}
+        <img class="hero-main-photo" src="/media/projects/gallery/g1_08.jpg" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+      {% endif %}
       <div class="hero-photo-badge">
-        <img src="{% static 'portfolio/images/profile.jpg' %}" alt="Abel portrait" loading="lazy" onerror="this.style.display='none'">
+        {% if profile.hero_badge_image %}
+          <img src="{{ profile.hero_badge_image.url }}" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+        {% else %}
+          <img src="{% static 'portfolio/images/profile.jpg' %}" alt="Abel portrait" loading="lazy" onerror="this.style.display='none'">
+        {% endif %}
       </div>
     </div>
   </div>
@@ -61,10 +73,18 @@
       </div>
       <div class="about-photo-stack" aria-label="Editor portraits">
         <figure class="about-photo-card about-photo-main">
-          <img src="/media/projects/gallery/g1_07.jpg" alt="Abel studio portrait" loading="lazy">
+          {% if profile.about_main_image %}
+            <img src="{{ profile.about_main_image.url }}" alt="{{ profile.name }}" loading="lazy">
+          {% else %}
+            <img src="/media/projects/gallery/g1_07.jpg" alt="Abel studio portrait" loading="lazy">
+          {% endif %}
         </figure>
         <figure class="about-photo-card about-photo-side">
-          <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel holding camera" loading="lazy">
+          {% if profile.about_side_image %}
+            <img src="{{ profile.about_side_image.url }}" alt="{{ profile.name }}" loading="lazy">
+          {% else %}
+            <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel holding camera" loading="lazy">
+          {% endif %}
         </figure>
       </div>
     </div>

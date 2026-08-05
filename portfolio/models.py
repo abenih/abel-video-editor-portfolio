@@ -159,6 +159,31 @@ class SiteProfile(models.Model):
     instagram = models.CharField(max_length=100, blank=True, help_text='Username only, without @.')
     facebook = models.CharField(max_length=100, blank=True, help_text='Username only.')
     telegram = models.CharField(max_length=100, blank=True, help_text='Username only.')
+    hero_main_image = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Main portrait in the hero card.',
+    )
+    hero_badge_image = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Small floating hero image.',
+    )
+    hero_cutout_image = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Right-side hero cutout image.',
+    )
+    about_main_image = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='First image in the about photo pair.',
+    )
+    about_side_image = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Second image in the about photo pair.',
+    )
 
     class Meta:
         verbose_name = 'Site Profile'

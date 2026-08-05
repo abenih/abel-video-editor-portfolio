@@ -51,6 +51,8 @@ class SiteProfileForm(StyledFormMixin, forms.ModelForm):
         fields = [
             'name', 'alias', 'title', 'tagline', 'bio', 'highlight', 'since',
             'location', 'phone', 'email', 'instagram', 'facebook', 'telegram',
+            'hero_main_image', 'hero_badge_image', 'hero_cutout_image',
+            'about_main_image', 'about_side_image',
         ]
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 5}),
