@@ -1,0 +1,29 @@
+{% load portfolio_extras %}
+<footer class="site-footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>{{ profile.name }}</h3>
+      <p>{{ profile.tagline }}</p>
+    </div>
+
+    <div class="footer-contact">
+      <a href="mailto:{{ profile.email }}" class="contact-line"><span class="contact-badge">✉</span>{{ profile.email }}</a>
+      <a href="tel:{{ profile.phone }}" class="contact-line"><span class="contact-badge">☎</span>{{ profile.phone }}</a>
+      <span class="contact-line"><span class="contact-badge">📍</span>{{ profile.location }}</span>
+    </div>
+
+    <div class="footer-social">
+      <a href="https://instagram.com/{{ profile.instagram }}" target="_blank" rel="noopener noreferrer" class="social-badge">
+        <span class="social-icon social-instagram">{% icon 'instagram' %}</span> @{{ profile.instagram }}
+      </a>
+      <a href="https://facebook.com/{{ profile.facebook }}" target="_blank" rel="noopener noreferrer" class="social-badge">
+        <span class="social-icon social-facebook">{% icon 'facebook' %}</span> @{{ profile.facebook }}
+      </a>
+      <a href="https://t.me/{{ profile.telegram }}" target="_blank" rel="noopener noreferrer" class="social-badge">
+        <span class="social-icon social-telegram">{% icon 'telegram' %}</span> @{{ profile.telegram }}
+      </a>
+    </div>
+  </div>
+  <p class="footer-copy">© {% now "Y" %} {{ profile.name }}. All rights reserved.</p>
+</footer>
+

@@ -1,0 +1,81 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}{% if mode == 'edit' %}Edit Project{% else %}Upload New Project{% endif %} — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="form-page">
+  <div class="form-card">
+    <h1 class="reveal">{% if mode == 'edit' %}Edit Project{% else %}Upload a New Project{% endif %}{% include 'portfolio/includes/title_underline.html' %}</h1>
+    <p class="form-sub">
+      Upload a video file directly, or paste a YouTube/Vimeo link instead. Unlisted YouTube
+      links work great here — anyone with the link can watch, but it won't show up in search
+      or on your channel. (Fully <strong>Private</strong> videos won't play for visitors unless
+      they're signed in and individually granted access, so Unlisted is usually the better choice.)
+    </p>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="form-row">
+        <label for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+
+      <div class="form-row form-row-split">
+        <div>
+          <label for="{{ form.category.id_for_label }}">Category</label>
+          {{ form.category }}
+        </div>
+        <div>
+          <label for="{{ form.client.id_for_label }}">Client (optional)</label>
+          {{ form.client }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+      </div>
+
+      <div class="form-divider">Add your video — pick one</div>
+
+      <div class="form-row">
+        <label for="{{ form.video_file.id_for_label }}">Upload Video File</label>
+        {{ form.video_file }}
+        {{ form.video_file.errors }}
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.video_url.id_for_label }}">…or paste a Video Link</label>
+        {{ form.video_url }}
+        {{ form.video_url.errors }}
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.thumbnail.id_for_label }}">Thumbnail (optional)</label>
+        {{ form.thumbnail }}
+        <p class="field-hint">Leave blank to auto-use the YouTube thumbnail when a YouTube link is provided.</p>
+      </div>
+
+      <div class="form-row form-row-inline">
+        {{ form.is_featured }}
+        <label for="{{ form.is_featured.id_for_label }}">Feature this project at the top</label>
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.order.id_for_label }}">Sort order</label>
+        {{ form.order }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-accent">{% if mode == 'edit' %}Save Changes{% else %}Publish Project{% endif %}</button>
+        <a href="{% if mode == 'edit' %}{% url 'portfolio:project_detail' project.pk %}{% else %}{% url 'portfolio:home' %}{% endif %}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

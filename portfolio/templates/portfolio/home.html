@@ -1,0 +1,192 @@
+{% extends 'portfolio/base.html' %}
+{% load static %}
+{% load portfolio_extras %}
+
+{% block extra_head %}
+<link rel="preload" as="image" href="{% static 'portfolio/images/profile.jpg' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="eyebrow reveal">{{ profile.location }} · Available for freelance work</p>
+      <h1 class="reveal">{{ profile.title }}</h1>
+      <p class="hero-lead reveal">{{ profile.tagline }}</p>
+      <div class="hero-actions reveal">
+        <a href="#work" class="btn btn-accent">View My Work</a>
+        <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+      </div>
+      <div class="hero-stats reveal">
+        {% for stat in stats %}
+        <div class="stat">
+          <span class="stat-icon">{% icon stat.icon %}</span>
+          <span class="stat-value">{{ stat.value }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="hero-photo reveal">
+      <div class="hero-photo-ring"></div>
+      <div class="hero-photo-fallback">AS</div>
+      <img src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" onerror="this.style.display='none'">
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <span class="orb" style="width:260px; height:260px; top:-60px; left:-80px;" aria-hidden="true"></span>
+  <div class="section-head reveal">
+    <span class="ghost-number" aria-hidden="true">01</span>
+    <h2>About Me{% include 'portfolio/includes/title_underline.html' %}</h2>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-content reveal">
+      <p class="about-text">{{ profile.bio }}</p>
+      <p class="about-quote">{% icon 'check' 'quote-icon' %}{{ profile.highlight }}</p>
+      <div class="fact-chips">
+        <span class="fact-chip">{% icon 'pin' %}{{ profile.location }}</span>
+        <span class="fact-chip">{% icon 'clock' %}Editing since {{ profile.since }}</span>
+        <span class="fact-chip">{% icon 'check' %}Open for freelance work</span>
+      </div>
+    </div>
+    <div class="about-visual reveal">
+      <div class="about-panel">
+        <svg class="about-illustration" viewBox="0 0 320 300" aria-hidden="true">
+          <circle class="float-slow" cx="30" cy="40" r="6" fill="var(--accent-3)" opacity="0.6"/>
+          <circle class="float-med" cx="292" cy="66" r="9" fill="var(--accent-2)" opacity="0.5"/>
+          <circle class="float-fast" cx="270" cy="262" r="5" fill="var(--accent)" opacity="0.6"/>
+          <circle class="float-med" cx="20" cy="230" r="4" fill="var(--accent-3)" opacity="0.5"/>
+          <rect x="40" y="50" width="240" height="150" rx="16" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <circle cx="160" cy="125" r="40" fill="rgba(0,229,199,0.06)" stroke="none" class="pulse-ring"/>
+          <circle cx="160" cy="125" r="34" fill="none" stroke="var(--accent-3)" stroke-width="3"/>
+          <path d="M150 105 L188 125 L150 145 Z" fill="var(--accent-3)"/>
+          <circle cx="252" cy="62" r="5" fill="var(--accent-2)" class="rec-dot"/>
+          <path d="M140 200 L180 200 L170 220 L150 220 Z" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <line x1="130" y1="220" x2="190" y2="220" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+          <rect x="40" y="240" width="240" height="24" rx="6" fill="rgba(255,255,255,0.05)" stroke="var(--border)"/>
+          <rect x="48" y="246" width="40" height="12" rx="3" fill="var(--accent)"/>
+          <rect x="94" y="246" width="60" height="12" rx="3" fill="var(--accent-2)"/>
+          <rect x="160" y="246" width="30" height="12" rx="3" fill="var(--accent-3)"/>
+          <rect x="196" y="246" width="70" height="12" rx="3" fill="var(--accent)" opacity="0.6"/>
+        </svg>
+        <div class="about-panel-chips">
+          <span class="mini-chip">{% icon 'video' %}Video Editing</span>
+          <span class="mini-chip">{% icon 'design' %}Graphic Design</span>
+          <span class="mini-chip">{% icon 'ai' %}Generative AI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tools" id="skills">
+  <span class="orb orb-alt" style="width:220px; height:220px; top:20px; right:-70px;" aria-hidden="true"></span>
+  <div class="section-head reveal">
+    <span class="ghost-number" aria-hidden="true">02</span>
+    <h2>Tools &amp; Skills{% include 'portfolio/includes/title_underline.html' %}</h2>
+  </div>
+
+  <div class="tools-wrap">
+    <svg class="tools-flow" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 20 Q 75 0, 150 20 T 300 20 T 450 20 T 600 20" />
+    </svg>
+    <div class="tools-grid">
+      {% for tool in tools %}
+      <div class="tool-badge reveal">
+        <span class="tool-icon" style="background:{{ tool.bg }}; color:{{ tool.fg }};">{{ tool.abbr }}</span>
+        <span class="tool-name">{{ tool.name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="skills-grid">
+    {% for group in skills %}
+    <div class="skill-card reveal">
+      <span class="skill-watermark" aria-hidden="true">{% icon group.icon %}</span>
+      <h3><span class="skill-icon">{% icon group.icon %}</span>{{ group.name }}</h3>
+      <ul>
+        {% for item in group.items.all %}
+        <li><span class="li-icon">{% icon 'bullet' %}</span>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="portfolio" id="work">
+  <span class="orb" style="width:300px; height:300px; bottom:-100px; left:-100px;" aria-hidden="true"></span>
+  <div class="section-head reveal">
+    <span class="ghost-number" aria-hidden="true">03</span>
+    <h2>Portfolio{% include 'portfolio/includes/title_underline.html' %}</h2>
+    {% if request.user.is_authenticated and request.user.is_staff %}
+      <a href="{% url 'portfolio:upload_project' %}" class="btn btn-accent btn-small">+ Add Project</a>
+    {% endif %}
+  </div>
+
+  {% if projects %}
+  <div class="filter-tabs reveal" role="tablist">
+    <button class="filter-tab active" data-filter="all" type="button">{% icon 'all' 'tab-icon' %}All</button>
+    {% for value, label in categories %}
+      <button class="filter-tab" data-filter="{{ value }}" type="button">{% icon value 'tab-icon' %}{{ label }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="project-grid">
+    {% for project in projects %}
+    <a href="{% url 'portfolio:project_detail' project.pk %}" class="project-card reveal" data-category="{{ project.category }}">
+      <div class="project-thumb">
+        {% if project.display_thumbnail_url %}
+          <img src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}" loading="lazy">
+        {% else %}
+          <div class="project-thumb-fallback">{% icon project.category 'fallback-icon' %}{{ project.get_category_display }}</div>
+        {% endif %}
+        {% if project.has_playable_media %}<span class="play-badge">▶</span>{% endif %}
+        {% if project.is_featured %}<span class="badge-featured">Featured</span>{% endif %}
+      </div>
+      <div class="project-meta">
+        <h3>{{ project.title }}</h3>
+        <span class="project-category">{% icon project.category 'tag-icon' %}{{ project.get_category_display }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state reveal">
+    <p>No projects uploaded yet — this is where finished work will appear.</p>
+    {% if request.user.is_authenticated and request.user.is_staff %}
+      <a href="{% url 'portfolio:upload_project' %}" class="btn btn-accent">Upload your first project</a>
+    {% else %}
+      <a href="{% url 'portfolio:login' %}" class="btn btn-ghost">Owner login</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+
+<section class="experience" id="experience">
+  <div class="section-head reveal">
+    <span class="ghost-number" aria-hidden="true">04</span>
+    <h2>Experience{% include 'portfolio/includes/title_underline.html' %}</h2>
+  </div>
+  <div class="timeline">
+    {% for job in experience %}
+    <div class="timeline-item reveal">
+      <div class="timeline-dot">{% icon 'briefcase' %}</div>
+      <div class="timeline-content">
+        <span class="timeline-period">{{ job.period }}</span>
+        <h3>{{ job.role }}</h3>
+        <p class="timeline-org">{{ job.org }}</p>
+        <p>{{ job.description }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

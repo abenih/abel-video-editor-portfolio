@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ profile_user.username }} | Profile</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #081c24, #0a3a40);
+            color: #e7faff;
+        }
+
+        .container {
+            padding: 30px 20px 120px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        /* Profile header */
+        .profile-card {
+            display: flex;
+            gap: 20px;
+            background: rgba(0,0,0,0.35);
+            padding: 25px;
+            border-radius: 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 25px rgba(0,234,255,0.25);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00eaff, #00ff88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #001418;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .username {
+            font-size: 26px;
+            font-weight: bold;
+            color: #00eaff;
+        }
+
+        .email {
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-top: 30px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #00eaff, #00ff88);
+            color: #001418;
+            font-weight: bold;
+            opacity: 1;
+        }
+
+        /* Books area */
+        .books-box {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.35);
+            border-radius: 22px;
+            padding: 50px 20px;
+            text-align: center;
+            opacity: 0.7;
+        }
+                
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0d0d0d;
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+
+.bottom-nav .nav-item {
+    color: #00eaff;
+    font-size: 26px;
+    text-decoration: none;
+    text-shadow: 0 0 10px #00eaff;
+    opacity: 0.6;
+    transition: 0.2s;
+}
+
+.bottom-nav .nav-item.active {
+    opacity: 1;
+    text-shadow: 0 0 14px #00eaff;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    backdrop-filter: blur(4px); 
+    background: transparent;   
+}
+.bottom-nav a {
+    color: red;              
+    font-size: 18px;
+    text-decoration: none;
+}
+.menu-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;  /* rounded square */
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #0ff;
+    box-shadow: 0 0 10px #0ff, 0 0 25px #0ff inset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 999;
+}
+
+.menu-btn span {
+    width: 60%;
+    height: 3px;
+    background: #0ff;
+    box-shadow: 0 0 6px #0ff;
+    display: block;
+}
+
+/* dropdown menu */
+.dropdown-menu {
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    width: 150px;
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid #0ff;
+    border-radius: 12px;
+    box-shadow: 0 0 12px #0ff;
+    padding: 10px 0;
+    z-index: 998;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(0,255,255,0.2);
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Floating Nav */
+.bottom-nav {
+    position: fixed;
+    bottom: 20px; /* lifts bar so it floats */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%; /* not edge to edge */
+    
+    background: rgba(0, 0, 0, 0.25); /* transparent dark tint */
+    backdrop-filter: blur(10px); /* glass effect */
+    -webkit-backdrop-filter: blur(10px);
+
+    padding: 12px 0;
+    border-radius: 18px; /* rounded edges */
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    border: none; /* removes any visible line */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35); /* soft shadow for floating look */
+}
+
+/* Links/icons */
+.bottom-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 400;
+    opacity: 0.8;
+    transition: 0.2s;
+}
+
+.bottom-nav a:hover,
+.bottom-nav a.active {
+    opacity: 1;
+}
+
+    </style>
+</head>
+<script>
+function toggleMenu() {
+    const menu = document.getElementById("dropdown-menu");
+    menu.classList.toggle("hidden");
+}
+</script>
+
+<body>
+
+ <div class="menu-btn" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+    </div>
+
+    <div id="dropdown-menu" class="dropdown-menu hidden">
+            <a href="#" class="menu-item logout-link">Logout</a>
+            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:none;">
+                {% csrf_token %}
+            </form>
+    <a href="#">Settings</a>
+    <a href="#">About Us</a>
+    </div>    
+
+<div class="container">
+    <h1>Profile</h1>
+
+    <div class="profile-card">
+        <div class="avatar">
+            {% if profile and profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;">
+            {% else %}
+                {{ profile_user.username|first|upper }}
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <div class="username">{{ profile_user.username }}</div>
+            <div class="email">{{ profile_user.email }}</div>
+
+            {% if profile and profile.bio %}
+                <p style="margin-top:10px;">{{ profile.bio }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="tabs">
+    <div class="tab active" onclick="showTab('read')">Read</div>
+    <div class="tab" onclick="showTab('saved')">Saved</div>
+</div>
+
+<div id="read" class="books-box">
+    Read books will appear here
+</div>
+
+<div id="saved" class="books-box" style="display:none;">
+    Saved books will appear here
+</div>
+<div class="bottom-nav">
+    <a href="{% url 'firstpage' %}" class="nav-item {% if active_page == 'home' %}active{% endif %}">🏠</a>
+    <a href="{% url 'search' %}" class="nav-item {% if active_page == 'search' %}active{% endif %}">🔍</a>
+    <a href="{% url 'explore' %}" class="nav-item {% if active_page == 'explore' %}active{% endif %}">✨</a>
+    <a href="{% url 'profile' %}" class="nav-item {% if active_page == 'profile' %}active{% endif %}">👤</a>
+</div>
+
+</div>
+<script>
+function showTab(tab) {
+    const readBox = document.getElementById("read");
+    const savedBox = document.getElementById("saved");
+    const tabs = document.querySelectorAll(".tab");
+
+    tabs.forEach(t => t.classList.remove("active"));
+
+    if (tab === "read") {
+        readBox.style.display = "block";
+        savedBox.style.display = "none";
+        tabs[0].classList.add("active");
+    } else {
+        readBox.style.display = "none";
+        savedBox.style.display = "block";
+        tabs[1].classList.add("active");
+    }
+}
+</script>
+
+</body>
+</html>

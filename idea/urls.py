@@ -1,0 +1,17 @@
+from django.urls import path
+from .views import *
+from django.contrib.auth.views import *
+from idea import views
+
+urlpatterns = [
+    path('', Home.as_view(), name='home'),
+    path('accounts/login/', login_page, name='login'),
+    path('reader/<uuid:book_id>/', views.reader, name='reader'),
+    path('signup/', signup_page, name='signup'),
+    path('library/', views.Firstpage.as_view(), name='firstpage'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('search/', views.search, name='search'),
+    path('explore/', views.explore, name='explore'),
+    path('profile/', my_profile, name='profile'),             
+    path('user/<str:username>/', profile_detail, name='profile_detail'),
+]

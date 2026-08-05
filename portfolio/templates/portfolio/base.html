@@ -1,0 +1,33 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ profile.name }} — {{ profile.title }}{% endblock %}</title>
+<meta name="description" content="{{ profile.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'portfolio/css/style.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% include 'portfolio/includes/navbar.html' %}
+
+{% if messages %}
+<div class="toast-wrap">
+  {% for message in messages %}
+    <div class="toast toast-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+{% include 'portfolio/includes/footer.html' %}
+<script src="{% static 'portfolio/js/main.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

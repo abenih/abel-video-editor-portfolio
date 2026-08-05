@@ -1,0 +1,27 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}Login — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+  <div class="form-card">
+    <h1 class="reveal">Owner Login{% include 'portfolio/includes/title_underline.html' %}</h1>
+    <p class="form-sub">Log in to upload and manage portfolio projects.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="form-row">
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+      </div>
+      <div class="form-row">
+        <label for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }}
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-accent">Log In</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

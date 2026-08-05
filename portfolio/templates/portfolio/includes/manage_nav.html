@@ -1,0 +1,8 @@
+<nav class="manage-nav">
+  <a href="{% url 'portfolio:manage_projects' %}" class="manage-nav-link{% if active == 'projects' %} active{% endif %}">Projects</a>
+  <a href="{% url 'portfolio:manage_profile' %}" class="manage-nav-link{% if active == 'profile' %} active{% endif %}">Profile</a>
+  <a href="{% url 'portfolio:manage_content_list' 'stats' %}" class="manage-nav-link{% if active == 'stats' %} active{% endif %}">Stats</a>
+  <a href="{% url 'portfolio:manage_content_list' 'tools' %}" class="manage-nav-link{% if active == 'tools' %} active{% endif %}">Tools</a>
+  <a href="{% url 'portfolio:manage_skills' %}" class="manage-nav-link{% if active == 'skills' %} active{% endif %}">Skills</a>
+  <a href="{% url 'portfolio:manage_content_list' 'experience' %}" class="manage-nav-link{% if active == 'experience' %} active{% endif %}">Experience</a>
+</nav>

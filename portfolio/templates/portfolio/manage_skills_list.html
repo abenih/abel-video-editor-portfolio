@@ -1,0 +1,43 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}Manage Skills — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="manage-page">
+  <div class="section-head">
+    <h1 class="reveal">Manage Skills{% include 'portfolio/includes/title_underline.html' %}</h1>
+    <a href="{% url 'portfolio:manage_skill_add' %}" class="btn btn-accent btn-small">+ Add Skill Group</a>
+  </div>
+
+  {% include 'portfolio/includes/manage_nav.html' with active='skills' %}
+
+  <p class="form-sub">Each group becomes one card in the Tools &amp; Skills section, with its own bullet list.</p>
+
+  {% if groups %}
+  <div class="manage-table-wrap">
+    <table class="manage-table">
+      <thead><tr><th>Group</th><th>Icon</th><th>Items</th><th>Order</th><th></th></tr></thead>
+      <tbody>
+        {% for group in groups %}
+        <tr>
+          <td>{{ group.name }}</td>
+          <td>{{ group.get_icon_display }}</td>
+          <td>{{ group.items.count }}</td>
+          <td>{{ group.order }}</td>
+          <td class="manage-actions">
+            <a href="{% url 'portfolio:manage_skill_edit' group.pk %}">Edit</a>
+            <form action="{% url 'portfolio:manage_skill_delete' group.pk %}" method="post" onsubmit="return confirm('Delete {{ group.name|escapejs }} and all its items?');">
+              {% csrf_token %}
+              <button type="submit" class="link-btn danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No skill groups yet. <a href="{% url 'portfolio:manage_skill_add' %}">Add the first one</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}{% if mode == 'edit' %}Edit {{ singular }}{% else %}Add {{ singular }}{% endif %} — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="form-page">
+  <div class="form-card">
+    <h1 class="reveal">{% if mode == 'edit' %}Edit {{ singular }}{% else %}Add {{ singular }}{% endif %}{% include 'portfolio/includes/title_underline.html' %}</h1>
+
+    {% include 'portfolio/includes/manage_nav.html' with active=key %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for field in form %}
+      <div class="form-row{% if field.field.widget.input_type == 'checkbox' %} form-row-inline{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          {{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% else %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        {% endif %}
+        {% if field.help_text %}<p class="field-hint">{{ field.help_text }}</p>{% endif %}
+        {{ field.errors }}
+      </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-accent">Save</button>
+        <a href="{% url 'portfolio:manage_content_list' key %}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

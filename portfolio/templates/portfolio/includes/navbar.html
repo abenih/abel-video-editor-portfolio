@@ -1,0 +1,29 @@
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a href="{% url 'portfolio:home' %}" class="brand">
+      <span class="brand-mark">AS</span>
+      <span class="brand-name">{{ profile.alias|default:profile.name }}</span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="{% url 'portfolio:home' %}#about">About</a>
+      <a href="{% url 'portfolio:home' %}#work">Work</a>
+      <a href="{% url 'portfolio:home' %}#skills">Skills</a>
+      <a href="{% url 'portfolio:home' %}#contact">Contact</a>
+      {% if request.user.is_authenticated and request.user.is_staff %}
+        <a href="{% url 'portfolio:upload_project' %}" class="btn btn-accent btn-small">+ Upload Project</a>
+        <a href="{% url 'portfolio:manage_projects' %}">Manage</a>
+        <form action="{% url 'portfolio:logout' %}" method="post" class="inline-form">
+          {% csrf_token %}
+          <button type="submit" class="link-btn">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'portfolio:login' %}">Login</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>

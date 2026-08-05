@@ -1,0 +1,41 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}Manage {{ label }} — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="manage-page">
+  <div class="section-head">
+    <h1 class="reveal">Manage {{ label }}{% include 'portfolio/includes/title_underline.html' %}</h1>
+    <a href="{% url 'portfolio:manage_content_add' key %}" class="btn btn-accent btn-small">+ Add {{ singular }}</a>
+  </div>
+
+  {% include 'portfolio/includes/manage_nav.html' with active=key %}
+
+  <p class="form-sub">{{ help_text }}</p>
+
+  {% if items %}
+  <div class="manage-table-wrap">
+    <table class="manage-table">
+      <thead><tr><th>Summary</th><th>Order</th><th></th></tr></thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item }}</td>
+          <td>{{ item.order }}</td>
+          <td class="manage-actions">
+            <a href="{% url 'portfolio:manage_content_edit' key item.pk %}">Edit</a>
+            <form action="{% url 'portfolio:manage_content_delete' key item.pk %}" method="post" onsubmit="return confirm('Delete this {{ singular|lower }}?');">
+              {% csrf_token %}
+              <button type="submit" class="link-btn danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>Nothing here yet. <a href="{% url 'portfolio:manage_content_add' key %}">Add the first one</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

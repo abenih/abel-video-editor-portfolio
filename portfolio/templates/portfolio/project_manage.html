@@ -1,0 +1,43 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}Manage Projects — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="manage-page">
+  <div class="section-head">
+    <h1 class="reveal">Manage Projects{% include 'portfolio/includes/title_underline.html' %}</h1>
+    <a href="{% url 'portfolio:upload_project' %}" class="btn btn-accent btn-small">+ Add Project</a>
+  </div>
+
+  {% include 'portfolio/includes/manage_nav.html' with active='projects' %}
+
+  {% if projects %}
+  <div class="manage-table-wrap">
+    <table class="manage-table">
+      <thead>
+        <tr><th>Title</th><th>Category</th><th>Featured</th><th>Added</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+        <tr>
+          <td><a href="{% url 'portfolio:project_detail' project.pk %}">{{ project.title }}</a></td>
+          <td>{{ project.get_category_display }}</td>
+          <td>{% if project.is_featured %}★{% else %}—{% endif %}</td>
+          <td>{{ project.created_at|date:"M j, Y" }}</td>
+          <td class="manage-actions">
+            <a href="{% url 'portfolio:edit_project' project.pk %}">Edit</a>
+            <form action="{% url 'portfolio:delete_project' project.pk %}" method="post" onsubmit="return confirm('Delete {{ project.title|escapejs }}?');">
+              {% csrf_token %}
+              <button type="submit" class="link-btn danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No projects yet. <a href="{% url 'portfolio:upload_project' %}">Add your first one</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

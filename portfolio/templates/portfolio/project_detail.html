@@ -1,0 +1,68 @@
+{% extends 'portfolio/base.html' %}
+{% load portfolio_extras %}
+
+{% block title %}{{ project.title }} — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="project-detail">
+  <a href="{% url 'portfolio:home' %}#work" class="back-link">← Back to Portfolio</a>
+
+  <div class="project-detail-head">
+    <span class="project-category">{% icon project.category 'tag-icon' %}{{ project.get_category_display }}</span>
+    <h1 class="reveal">{{ project.title }}{% include 'portfolio/includes/title_underline.html' %}</h1>
+    {% if project.client %}<p class="project-client">Client: {{ project.client }}</p>{% endif %}
+  </div>
+
+  <div class="player">
+    {% if project.video_file %}
+      <video controls preload="metadata" {% if project.display_thumbnail_url %}poster="{{ project.display_thumbnail_url }}"{% endif %}>
+        <source src="{{ project.video_file.url }}">
+        Your browser doesn't support embedded video. <a href="{{ project.video_file.url }}">Download the file</a>.
+      </video>
+    {% elif project.embed_url %}
+      <div class="embed-wrap">
+        <iframe src="{{ project.embed_url }}" title="{{ project.title }}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+    {% elif project.video_url %}
+      <div class="project-thumb-fallback large">
+        <p>This link can't be embedded directly.</p>
+        <a href="{{ project.video_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-accent btn-small">Watch Video ↗</a>
+      </div>
+    {% elif project.display_thumbnail_url %}
+      <img class="detail-image" src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}">
+    {% else %}
+      <div class="project-thumb-fallback large">{% icon project.category 'fallback-icon' %}{{ project.get_category_display }}</div>
+    {% endif %}
+  </div>
+
+  {% if project.gallery.all %}
+  <div class="gallery-grid">
+    {% for shot in project.gallery.all %}
+      <a href="{{ shot.image.url }}" target="_blank" rel="noopener noreferrer" class="gallery-item">
+        <img src="{{ shot.image.url }}" alt="{{ project.title }} — extra shot {{ forloop.counter }}" loading="lazy">
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if project.description %}
+  <div class="project-description">
+    <h2>About this project</h2>
+    <p>{{ project.description|linebreaksbr }}</p>
+  </div>
+  {% endif %}
+
+  {% if request.user.is_authenticated and request.user.is_staff %}
+  <div class="owner-actions">
+    <a href="{% url 'portfolio:edit_project' project.pk %}" class="btn btn-ghost btn-small">Edit</a>
+    <form action="{% url 'portfolio:delete_project' project.pk %}" method="post" onsubmit="return confirm('Delete this project? This cannot be undone.');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-small">Delete</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
