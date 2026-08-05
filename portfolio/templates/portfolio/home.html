@@ -31,8 +31,14 @@
     </div>
     <div class="hero-photo reveal">
       <div class="hero-photo-ring"></div>
+      <div class="hero-cutout">
+        <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel with camera" loading="lazy">
+      </div>
       <div class="hero-photo-fallback">AS</div>
-      <img src="{% static 'portfolio/images/profile.jpg' %}" alt="{{ profile.name }}" onerror="this.style.display='none'">
+      <img class="hero-main-photo" src="/media/projects/gallery/g1_08.jpg" alt="{{ profile.name }}" loading="lazy" onerror="this.style.display='none'">
+      <div class="hero-photo-badge">
+        <img src="{% static 'portfolio/images/profile.jpg' %}" alt="Abel portrait" loading="lazy" onerror="this.style.display='none'">
+      </div>
     </div>
   </div>
 </section>
@@ -52,6 +58,14 @@
         <span class="fact-chip">{% icon 'pin' %}{{ profile.location }}</span>
         <span class="fact-chip">{% icon 'clock' %}Editing since {{ profile.since }}</span>
         <span class="fact-chip">{% icon 'check' %}Open for freelance work</span>
+      </div>
+      <div class="about-photo-stack" aria-label="Editor portraits">
+        <figure class="about-photo-card about-photo-main">
+          <img src="/media/projects/gallery/g1_07.jpg" alt="Abel studio portrait" loading="lazy">
+        </figure>
+        <figure class="about-photo-card about-photo-side">
+          <img class="camera-image-upright" src="/media/projects/gallery/g2_05.png" alt="Abel holding camera" loading="lazy">
+        </figure>
       </div>
     </div>
     <div class="about-visual reveal">
