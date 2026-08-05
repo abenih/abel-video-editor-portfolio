@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'portfolio/css/style.css' %}">
+<style>
+  :root {
+    --bg: {{ profile.theme_bg }};
+    --bg-alt: {{ profile.theme_bg_alt }};
+    --text: {{ profile.theme_text }};
+    --text-muted: {{ profile.theme_text_muted }};
+    --accent: {{ profile.theme_accent }};
+    --accent-2: {{ profile.theme_accent_2 }};
+    --accent-3: {{ profile.theme_accent_3 }};
+  }
+</style>
 {% block extra_head %}{% endblock %}
 </head>
 <body>

@@ -28,6 +28,13 @@ class SiteProfileAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Identity', {'fields': ('name', 'alias', 'title', 'tagline')}),
         ('About section', {'fields': ('bio', 'highlight', 'since')}),
+        ('Hero copy', {'fields': ('availability_text', 'hero_primary_cta_label', 'hero_secondary_cta_label')}),
+        ('Theme colors', {
+            'fields': (
+                'theme_bg', 'theme_bg_alt', 'theme_text', 'theme_text_muted',
+                'theme_accent', 'theme_accent_2', 'theme_accent_3',
+            )
+        }),
         ('Contact details', {'fields': ('location', 'phone', 'email')}),
         ('Social handles', {'fields': ('instagram', 'facebook', 'telegram')}),
         ('Homepage images', {

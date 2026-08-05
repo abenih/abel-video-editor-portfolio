@@ -1,7 +1,7 @@
 import re
 
 from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 
@@ -15,6 +15,7 @@ YOUTUBE_PATTERNS = [
     r'youtube\.com/shorts/([A-Za-z0-9_-]{6,})',
 ]
 VIMEO_PATTERN = r'vimeo\.com/(?:video/)?(\d+)'
+HEX_COLOR_PATTERN = r'^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$'
 
 
 def extract_youtube_id(url):
@@ -159,6 +160,16 @@ class SiteProfile(models.Model):
     instagram = models.CharField(max_length=100, blank=True, help_text='Username only, without @.')
     facebook = models.CharField(max_length=100, blank=True, help_text='Username only.')
     telegram = models.CharField(max_length=100, blank=True, help_text='Username only.')
+    availability_text = models.CharField(max_length=120, default='Available for freelance work')
+    hero_primary_cta_label = models.CharField(max_length=50, default='View My Work')
+    hero_secondary_cta_label = models.CharField(max_length=50, default='Get In Touch')
+    theme_bg = models.CharField(max_length=7, default='#08080c', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_bg_alt = models.CharField(max_length=7, default='#111117', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_text = models.CharField(max_length=7, default='#f3f3f7', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_text_muted = models.CharField(max_length=7, default='#9a9aac', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_accent = models.CharField(max_length=7, default='#7c5cff', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_accent_2 = models.CharField(max_length=7, default='#ff3d8f', validators=[RegexValidator(HEX_COLOR_PATTERN)])
+    theme_accent_3 = models.CharField(max_length=7, default='#00e5c7', validators=[RegexValidator(HEX_COLOR_PATTERN)])
     hero_main_image = models.ImageField(
         upload_to='profile/', blank=True, null=True,
         validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],

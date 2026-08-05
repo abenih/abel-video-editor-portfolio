@@ -12,12 +12,12 @@
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-text">
-      <p class="eyebrow reveal">{{ profile.location }} · Available for freelance work</p>
+      <p class="eyebrow reveal">{{ profile.location }} · {{ profile.availability_text }}</p>
       <h1 class="reveal">{{ profile.title }}</h1>
       <p class="hero-lead reveal">{{ profile.tagline }}</p>
       <div class="hero-actions reveal">
-        <a href="#work" class="btn btn-accent">View My Work</a>
-        <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+        <a href="#work" class="btn btn-accent">{{ profile.hero_primary_cta_label }}</a>
+        <a href="#contact" class="btn btn-ghost">{{ profile.hero_secondary_cta_label }}</a>
       </div>
       <div class="hero-stats reveal">
         {% for stat in stats %}
@@ -69,7 +69,7 @@
       <div class="fact-chips">
         <span class="fact-chip">{% icon 'pin' %}{{ profile.location }}</span>
         <span class="fact-chip">{% icon 'clock' %}Editing since {{ profile.since }}</span>
-        <span class="fact-chip">{% icon 'check' %}Open for freelance work</span>
+        <span class="fact-chip">{% icon 'check' %}{{ profile.availability_text }}</span>
       </div>
       <div class="about-photo-stack" aria-label="Editor portraits">
         <figure class="about-photo-card about-photo-main">

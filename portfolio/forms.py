@@ -51,6 +51,9 @@ class SiteProfileForm(StyledFormMixin, forms.ModelForm):
         fields = [
             'name', 'alias', 'title', 'tagline', 'bio', 'highlight', 'since',
             'location', 'phone', 'email', 'instagram', 'facebook', 'telegram',
+            'availability_text', 'hero_primary_cta_label', 'hero_secondary_cta_label',
+            'theme_bg', 'theme_bg_alt', 'theme_text', 'theme_text_muted',
+            'theme_accent', 'theme_accent_2', 'theme_accent_3',
             'hero_main_image', 'hero_badge_image', 'hero_cutout_image',
             'about_main_image', 'about_side_image',
         ]
@@ -60,6 +63,16 @@ class SiteProfileForm(StyledFormMixin, forms.ModelForm):
             'instagram': forms.TextInput(attrs={'placeholder': 'username (no @)'}),
             'facebook': forms.TextInput(attrs={'placeholder': 'username (no @)'}),
             'telegram': forms.TextInput(attrs={'placeholder': 'username (no @)'}),
+            'availability_text': forms.TextInput(attrs={'placeholder': 'Available for freelance work'}),
+            'hero_primary_cta_label': forms.TextInput(attrs={'placeholder': 'View My Work'}),
+            'hero_secondary_cta_label': forms.TextInput(attrs={'placeholder': 'Get In Touch'}),
+            'theme_bg': forms.TextInput(attrs={'type': 'color'}),
+            'theme_bg_alt': forms.TextInput(attrs={'type': 'color'}),
+            'theme_text': forms.TextInput(attrs={'type': 'color'}),
+            'theme_text_muted': forms.TextInput(attrs={'type': 'color'}),
+            'theme_accent': forms.TextInput(attrs={'type': 'color'}),
+            'theme_accent_2': forms.TextInput(attrs={'type': 'color'}),
+            'theme_accent_3': forms.TextInput(attrs={'type': 'color'}),
         }
 
     def __init__(self, *args, **kwargs):
