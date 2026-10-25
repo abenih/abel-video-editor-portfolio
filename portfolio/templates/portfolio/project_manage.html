@@ -21,7 +21,7 @@
         {% for project in projects %}
         <tr>
           <td><a href="{% url 'portfolio:project_detail' project.pk %}">{{ project.title }}</a></td>
-          <td>{{ project.get_category_display }}</td>
+          <td>{{ project.display_category }}</td>
           <td>{% if project.is_featured %}★{% else %}—{% endif %}</td>
           <td>{{ project.created_at|date:"M j, Y" }}</td>
           <td class="manage-actions">

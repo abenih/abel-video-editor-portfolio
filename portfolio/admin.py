@@ -3,12 +3,17 @@ from django.contrib import admin
 from django.shortcuts import redirect
 
 from .models import (
-    ExperienceEntry, Project, ProjectImage, SiteProfile, SkillGroup, SkillItem, Stat, Tool,
+    ExperienceEntry, Project, ProjectImage, ProjectVideo, SiteProfile, SkillGroup, SkillItem, Stat, Tool,
 )
 
 
 class ProjectImageInline(admin.TabularInline):
     model = ProjectImage
+    extra = 1
+
+
+class ProjectVideoInline(admin.TabularInline):
+    model = ProjectVideo
     extra = 1
 
 
@@ -18,7 +23,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ('category', 'is_featured')
     search_fields = ('title', 'client', 'description')
     ordering = ('-is_featured', 'order', '-created_at')
-    inlines = [ProjectImageInline]
+    inlines = [ProjectVideoInline, ProjectImageInline]
 
 
 @admin.register(SiteProfile)
@@ -76,7 +81,7 @@ class ToolAdminForm(forms.ModelForm):
 @admin.register(Tool)
 class ToolAdmin(admin.ModelAdmin):
     form = ToolAdminForm
-    list_display = ('name', 'abbr', 'order')
+    list_display = ('name', 'abbr', 'icon_image', 'order')
     list_editable = ('order',)
 
 

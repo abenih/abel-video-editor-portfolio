@@ -1,0 +1,117 @@
+{% comment %}
+Shared edit-panel fragment. Rendered on its own for the drawer (X-Panel: 1) and
+included by panel_page.html for the plain, JS-free full page — one copy of the
+form markup either way.
+{% endcomment %}
+{% load portfolio_extras %}
+<div class="panel" data-panel-key="{{ region.key }}">
+  <header class="panel-head">
+    <h1 class="panel-title">{{ region.label }}</h1>
+    <p class="panel-blurb">{{ region.blurb }}</p>
+  </header>
+
+  {% if mode == 'index' %}
+    <ul class="panel-list">
+      {% for item in items %}
+      <li class="panel-list-row">
+        <span class="panel-list-label">{{ item }}</span>
+        <a class="panel-list-edit" href="{% url 'portfolio:edit_panel_item' region.key item.pk %}?next={{ next_url|urlencode }}">Edit</a>
+      </li>
+      {% empty %}
+      <li class="panel-list-row panel-list-empty">Nothing here yet.</li>
+      {% endfor %}
+    </ul>
+
+    <div class="panel-actions">
+      <a class="btn btn-accent btn-small" href="{% url 'portfolio:edit_panel_new' region.key %}?next={{ next_url|urlencode }}">+ Add {{ region.singular|lower }}</a>
+      <a class="btn btn-ghost btn-small" href="{{ next_url }}">Back to the page</a>
+    </div>
+  {% else %}
+    <form class="panel-form" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for field in form %}
+      <div class="form-row{% if field.field.widget.input_type == 'checkbox' %} form-row-inline{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          {{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% else %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        {% endif %}
+        {% if field.field.widget.input_type == 'file' and field.value and field.value.url %}
+          {% with kind=field|preview_kind %}
+            {% if kind == 'video' %}
+              <video class="upload-preview" src="{{ field.value.url }}" muted playsinline preload="metadata" controls></video>
+            {% elif kind == 'image' %}
+              <img class="upload-preview" src="{{ field.value.url }}" alt="Current {{ field.label }}">
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+        {% if field.help_text %}<p class="field-hint">{{ field.help_text }}</p>{% endif %}
+        {{ field.errors }}
+      </div>
+      {% endfor %}
+
+      {% if formset %}
+        <div class="form-divider">{{ region.formset_label }}</div>
+        {{ formset.management_form }}
+        {% if formset.non_form_errors %}<div class="form-errors">{{ formset.non_form_errors }}</div>{% endif %}
+        <div class="formset-rows">
+          {% for item_form in formset %}
+          <div class="formset-row">
+            {% for hidden in item_form.hidden_fields %}{{ hidden }}{% endfor %}
+            {% for item_field in item_form.visible_fields %}
+              {% if item_field.name != 'DELETE' %}
+              <div class="formset-field{% if item_field.name == 'order' %} formset-field-small{% endif %}">
+                {% if item_field.field.widget.input_type == 'file' and item_field.value and item_field.value.url %}
+                  {% with kind=item_field|preview_kind %}
+                    {% if kind == 'video' %}
+                      <video class="formset-thumb" src="{{ item_field.value.url }}" muted playsinline preload="metadata" controls></video>
+                    {% elif kind == 'image' %}
+                      <img class="formset-thumb" src="{{ item_field.value.url }}" alt="{{ item_field.label }}">
+                    {% endif %}
+                  {% endwith %}
+                {% endif %}
+                {% if item_field.field.widget.input_type == 'checkbox' %}
+                  <label class="formset-check">{{ item_field }}<span>{{ item_field.label }}</span></label>
+                {% else %}
+                  <span class="formset-label">{{ item_field.label }}</span>
+                  {{ item_field }}
+                {% endif %}
+                {{ item_field.errors }}
+              </div>
+              {% endif %}
+            {% endfor %}
+            {% if item_form.instance.pk %}
+            <label class="formset-delete">{{ item_form.DELETE }} Remove</label>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="panel-actions">
+        <button type="submit" class="btn btn-accent">Save</button>
+        <a href="{{ next_url }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+
+    {% if can_delete %}
+    <form class="panel-delete" method="post" action="{% url 'portfolio:edit_panel_delete' region.key instance.pk %}"
+          onsubmit="return confirm('Delete this permanently?');">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <button type="submit" class="link-btn danger">Delete this</button>
+    </form>
+    {% endif %}
+  {% endif %}
+
+  {% if full_editor_url %}
+  <a class="panel-fallback" href="{{ full_editor_url }}">Open the full editor &rarr;</a>
+  {% endif %}
+</div>

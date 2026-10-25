@@ -1,4 +1,6 @@
-Django==5.2.2
+# Django 5.2 LTS. 5.2.8+ is required: it is the first release supporting Python
+# 3.14, which is the only interpreter on the Ubuntu 26.04 VPS this deploys to.
+Django==5.2.17
 Pillow==12.3.0
 whitenoise==6.12.0
-gunicorn==26.0.0
+gunicorn==26.2.0

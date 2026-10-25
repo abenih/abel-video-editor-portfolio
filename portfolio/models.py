@@ -15,7 +15,60 @@ YOUTUBE_PATTERNS = [
     r'youtube\.com/shorts/([A-Za-z0-9_-]{6,})',
 ]
 VIMEO_PATTERN = r'vimeo\.com/(?:video/)?(\d+)'
+TIKTOK_PATTERNS = [
+    r'tiktok\.com/@[\w.\-]{1,30}/(?:video|photo)/(\d{6,25})',
+    r'tiktok\.com/(?:v|embed)/(\d{6,25})',
+    r'tiktok\.com/player/v1/(\d{6,25})',
+]
 HEX_COLOR_PATTERN = r'^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$'
+
+ORIENTATION_CHOICES = [
+    ('landscape', 'Wide — 16:9'),
+    ('portrait', 'Tall — 9:16 (TikTok, Reels, Shorts)'),
+    ('square', 'Square — 1:1'),
+]
+
+_ASPECT_CLASSES = {
+    'landscape': 'is-landscape',
+    'portrait': 'is-portrait',
+    'square': 'is-square',
+}
+
+# The only origins an embed iframe may ever point at. Mirrored in main.js.
+PROVIDER_ORIGINS = {
+    'youtube': 'https://www.youtube-nocookie.com',
+    'vimeo': 'https://player.vimeo.com',
+    'tiktok': 'https://www.tiktok.com',
+}
+
+# TikTok is missing on purpose. Its player/v1 embed reached "playing" in only 3 of 10
+# cold loads during the provider spike; the rest stalled in `buffering` and painted a
+# black rectangle. It gets a poster and a play badge instead of a hover preview.
+HOVER_PREVIEW_PROVIDERS = ('file', 'youtube', 'vimeo')
+
+# Category is free text, so the little icon beside it is matched on wording.
+# Anything unrecognised simply renders without an icon.
+CATEGORY_ICONS = {
+    'video editing': 'video',
+    'video': 'video',
+    'motion graphics': 'motion',
+    'motion': 'motion',
+    'graphic design': 'design',
+    'design': 'design',
+    'thumbnail design': 'thumbnail',
+    'thumbnail': 'thumbnail',
+    'branding & logo': 'branding',
+    'branding': 'branding',
+    'generative ai': 'ai',
+    'ai': 'ai',
+}
+
+# Handles are pasted straight into https://instagram.com/<handle> etc. in the footer,
+# so anything outside a plain username could point the link somewhere else entirely.
+SOCIAL_HANDLE_VALIDATOR = RegexValidator(
+    r'^[A-Za-z0-9._]{1,30}$',
+    'Enter just the username — up to 30 letters, numbers, dots or underscores, with no @, spaces or slashes.',
+)
 
 
 def extract_youtube_id(url):
@@ -31,18 +84,25 @@ def extract_vimeo_id(url):
     return match.group(1) if match else None
 
 
-class Project(models.Model):
-    CATEGORY_CHOICES = [
-        ('video', 'Video Editing'),
-        ('motion', 'Motion Graphics'),
-        ('design', 'Graphic Design'),
-        ('thumbnail', 'Thumbnail Design'),
-        ('branding', 'Branding & Logo'),
-        ('ai', 'Generative AI'),
-    ]
+def extract_tiktok_id(url):
+    for pattern in TIKTOK_PATTERNS:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    return None
 
+
+def category_icon_for(label):
+    return CATEGORY_ICONS.get((label or '').strip().lower(), '')
+
+
+class Project(models.Model):
     title = models.CharField(max_length=200)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='video')
+    category = models.CharField(
+        max_length=60,
+        default='Video Editing',
+        help_text='The small label under the title, e.g. "Video Editing" or "Podcast video".',
+    )
     client = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
 
@@ -81,8 +141,20 @@ class Project(models.Model):
 
     def clean(self):
         super().clean()
-        if not self.video_file and not self.video_url:
-            raise ValidationError('Add a video file or paste a video link (YouTube/Vimeo) first.')
+        # The last condition only applies to a saved row — an unsaved one has no children yet.
+        if not (self.video_file or self.video_url or self.thumbnail or (self.pk and self.videos.exists())):
+            raise ValidationError(
+                'Add a video, paste a video link (YouTube/Vimeo), or upload a cover picture — '
+                'a piece needs at least one of these to show up on your site.'
+            )
+
+    @property
+    def display_category(self):
+        return self.category
+
+    @property
+    def category_icon(self):
+        return category_icon_for(self.category)
 
     @property
     def youtube_id(self):
@@ -102,16 +174,28 @@ class Project(models.Model):
         return ''
 
     @property
+    def cover_video(self):
+        """Meta.ordering already puts the chosen cover first."""
+        return self.videos.first()
+
+    @property
+    def video_count(self):
+        return self.videos.count()
+
+    @property
     def display_thumbnail_url(self):
         if self.thumbnail:
             return self.thumbnail.url
+        cover = self.cover_video
+        if cover and cover.poster_url:
+            return cover.poster_url
         if self.youtube_id:
             return f'https://img.youtube.com/vi/{self.youtube_id}/hqdefault.jpg'
         return ''
 
     @property
     def has_playable_media(self):
-        return bool(self.video_file or self.embed_url)
+        return bool(self.video_file or self.embed_url or self.videos.all())
 
 
 class ProjectImage(models.Model):
@@ -126,6 +210,121 @@ class ProjectImage(models.Model):
 
     def __str__(self):
         return f'{self.project.title} — image {self.order + 1}'
+
+
+class ProjectVideo(models.Model):
+    """One video inside a project's collection — either an upload or a link."""
+
+    project = models.ForeignKey(Project, related_name='videos', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200, blank=True)
+    video_file = models.FileField(
+        upload_to='projects/videos/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(VIDEO_EXTENSIONS)],
+    )
+    video_url = models.URLField(blank=True)
+    poster = models.ImageField(
+        upload_to='projects/posters/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+    )
+    orientation = models.CharField(max_length=12, choices=ORIENTATION_CHOICES, default='landscape')
+    is_cover = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-is_cover', 'order', 'id']
+
+    def __str__(self):
+        return self.title or f'{self.project.title} — video {self.order + 1}'
+
+    @property
+    def youtube_id(self):
+        return extract_youtube_id(self.video_url) if self.video_url else None
+
+    @property
+    def vimeo_id(self):
+        return extract_vimeo_id(self.video_url) if self.video_url else None
+
+    @property
+    def tiktok_id(self):
+        return extract_tiktok_id(self.video_url) if self.video_url else None
+
+    @property
+    def provider(self):
+        if self.video_file:
+            return 'file'
+        if self.youtube_id:
+            return 'youtube'
+        if self.vimeo_id:
+            return 'vimeo'
+        if self.tiktok_id:
+            return 'tiktok'
+        return ''
+
+    @property
+    def embed_url(self):
+        """Click-to-play URL, rebuilt from an extracted id — never the pasted link."""
+        if self.youtube_id:
+            return f'https://www.youtube-nocookie.com/embed/{self.youtube_id}?rel=0'
+        if self.vimeo_id:
+            return f'https://player.vimeo.com/video/{self.vimeo_id}?dnt=1'
+        if self.tiktok_id:
+            return f'https://www.tiktok.com/player/v1/{self.tiktok_id}?rel=0&description=0&music_info=0'
+        return ''
+
+    @property
+    def preview_embed_url(self):
+        """Muted, looping autoplay URL used for hover previews. Same id-only rule."""
+        if self.youtube_id:
+            return (
+                f'https://www.youtube-nocookie.com/embed/{self.youtube_id}'
+                '?autoplay=1&mute=1&playsinline=1&controls=0&rel=0&modestbranding=1'
+                f'&loop=1&playlist={self.youtube_id}'
+            )
+        if self.vimeo_id:
+            return f'https://player.vimeo.com/video/{self.vimeo_id}?background=1&autoplay=1&muted=1&loop=1&dnt=1'
+        if self.tiktok_id:
+            return (
+                f'https://www.tiktok.com/player/v1/{self.tiktok_id}'
+                '?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0'
+                '&volume_control=0&fullscreen_button=0&timestamp=0'
+                '&description=0&music_info=0&closed_caption=0&rel=0'
+            )
+        return ''
+
+    @property
+    def poster_url(self):
+        if self.poster:
+            return self.poster.url
+        if self.youtube_id:
+            return f'https://img.youtube.com/vi/{self.youtube_id}/hqdefault.jpg'
+        return ''
+
+    @property
+    def aspect_class(self):
+        return _ASPECT_CLASSES.get(self.orientation, 'is-landscape')
+
+    @property
+    def preview_kind(self):
+        """What a *hover* should mount: 'file' | 'iframe' | '' (no hover preview)."""
+        provider = self.provider
+        if provider not in HOVER_PREVIEW_PROVIDERS:
+            return ''
+        return 'file' if provider == 'file' else 'iframe'
+
+    @property
+    def play_kind(self):
+        """What a *click* should mount. Every provider is playable on demand."""
+        if self.provider == 'file':
+            return 'file'
+        return 'iframe' if self.embed_url else ''
+
+    @property
+    def preview_origin(self):
+        return PROVIDER_ORIGINS.get(self.provider, '')
 
 
 # Icon names must match keys defined in portfolio/templatetags/portfolio_extras.py.
@@ -157,9 +356,18 @@ class SiteProfile(models.Model):
     location = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=50, blank=True)
     email = models.EmailField(blank=True)
-    instagram = models.CharField(max_length=100, blank=True, help_text='Username only, without @.')
-    facebook = models.CharField(max_length=100, blank=True, help_text='Username only.')
-    telegram = models.CharField(max_length=100, blank=True, help_text='Username only.')
+    instagram = models.CharField(
+        max_length=100, blank=True, help_text='Username only, without @.',
+        validators=[SOCIAL_HANDLE_VALIDATOR],
+    )
+    facebook = models.CharField(
+        max_length=100, blank=True, help_text='Username only.',
+        validators=[SOCIAL_HANDLE_VALIDATOR],
+    )
+    telegram = models.CharField(
+        max_length=100, blank=True, help_text='Username only.',
+        validators=[SOCIAL_HANDLE_VALIDATOR],
+    )
     show_experience_section = models.BooleanField(default=True, help_text='Show or hide the Experience section.')
     availability_text = models.CharField(max_length=120, default='Available for freelance work')
     hero_primary_cta_label = models.CharField(max_length=50, default='View My Work')
@@ -196,6 +404,23 @@ class SiteProfile(models.Model):
         validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
         help_text='Second image in the about photo pair.',
     )
+    about_video_file = models.FileField(
+        upload_to='profile/videos/', blank=True, null=True,
+        validators=[FileExtensionValidator(VIDEO_EXTENSIONS)],
+        help_text='Video shown in the panel beside the About Me text.',
+    )
+    about_video_url = models.URLField(
+        blank=True,
+        help_text='YouTube, Vimeo or TikTok link used instead of an upload.',
+    )
+    about_video_poster = models.ImageField(
+        upload_to='profile/', blank=True, null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Still image shown before the about video plays.',
+    )
+    about_video_orientation = models.CharField(
+        max_length=12, choices=ORIENTATION_CHOICES, default='landscape',
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -216,6 +441,23 @@ class SiteProfile(models.Model):
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1, defaults={'title': 'Video Editor', 'tagline': ''})
         return obj
+
+    @property
+    def about_video(self):
+        """The About panel's video as an unsaved ProjectVideo, or None.
+
+        Borrowing the child model means the provider, embed and orientation rules
+        are written once. File *names* are copied rather than the FieldFile itself,
+        because assigning a FieldFile would rebind it to the wrong field.
+        """
+        if not (self.about_video_file or self.about_video_url):
+            return None
+        return ProjectVideo(
+            video_file=self.about_video_file.name if self.about_video_file else '',
+            video_url=self.about_video_url or '',
+            poster=self.about_video_poster.name if self.about_video_poster else '',
+            orientation=self.about_video_orientation,
+        )
 
 
 class Stat(models.Model):
@@ -238,6 +480,13 @@ class Tool(models.Model):
 
     name = models.CharField(max_length=100)
     abbr = models.CharField(max_length=4, help_text='Short badge text, e.g. Pr, Ae, Ps.')
+    icon_image = models.ImageField(
+        upload_to='tools/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(IMAGE_EXTENSIONS)],
+        help_text='Optional logo picture. Leave it empty and the coloured letters are used instead.',
+    )
     bg = models.CharField(max_length=20, default='#1e1e2e', verbose_name='Badge background color')
     fg = models.CharField(max_length=20, default='#ffffff', verbose_name='Badge text color')
     order = models.PositiveIntegerField(default=0)

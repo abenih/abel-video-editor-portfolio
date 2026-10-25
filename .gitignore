@@ -13,8 +13,18 @@ __pycache__/
 *.log
 .env
 
+# Secrets
+*.env
+.env.*
+secrets.json
+*.key
+*.pem
+
 # Editor
 .vscode/
+
+# Design reference tiles (sliced from the Behance capture, not part of the site)
+.ref-behance/
 
 # OS
 Thumbs.db

@@ -1,0 +1,300 @@
+/* ============================================================
+   Owner edit mode — loaded for staff only, never on the public site.
+   ============================================================ */
+
+.edit-toggle[aria-pressed='true'] {
+  border-color: var(--accent-3);
+  color: var(--accent-3);
+}
+
+/* A region that is its own edit link. Appears with the badges, disappears with them. */
+.edit-tool { display: none; }
+
+body.edit-mode .edit-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--accent-3);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+body.edit-mode .edit-tool::before { content: '\270E'; font-size: 11px; }
+
+body.edit-mode .edit-tool:hover,
+body.edit-mode .edit-tool:focus-visible {
+  background: var(--accent-3);
+  color: var(--bg);
+  outline: none;
+}
+
+/* The toolbar entry is the target itself — the dashed region outline would just be noise. */
+body.edit-mode .edit-tool,
+body.edit-mode .edit-tool:hover { outline: none; }
+
+/* Every marked region needs a positioning context for its badge. */
+body.edit-mode [data-edit-key] {
+  position: relative;
+  outline: 1px dashed rgba(124, 92, 255, 0.45);
+  outline-offset: 6px;
+  border-radius: 4px;
+  transition: outline-color 0.15s ease;
+}
+
+body.edit-mode [data-edit-key]:hover {
+  outline: 2px solid var(--accent-3);
+}
+
+/* Regions nest (About photos sit inside About text). Only outline the innermost
+   one under the cursor; browsers without :has() simply outline both. */
+body.edit-mode [data-edit-key]:has([data-edit-key]:hover) {
+  outline-color: rgba(124, 92, 255, 0.45);
+}
+
+.edit-badge {
+  display: none;
+  position: absolute;
+  top: -14px;
+  right: 0;
+  z-index: 40;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 12px);
+  padding: 5px 10px;
+  border: 1px solid var(--accent-3);
+  border-radius: 999px;
+  background: var(--bg-alt);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+body.edit-mode .edit-badge { display: inline-flex; }
+
+.edit-badge:hover,
+.edit-badge:focus-visible {
+  background: var(--accent-3);
+  color: var(--bg);
+  outline: none;
+}
+
+.edit-badge-pencil {
+  flex: none;
+  font-size: 11px;
+}
+
+/* The top bar is too short to hang a badge above it, so the brand's sits underneath. */
+body.edit-mode .brand-wrap > .edit-badge {
+  top: auto;
+  bottom: -30px;
+  right: auto;
+  left: 0;
+}
+
+/* ---------- Edit panel (also used by the standalone panel page) ---------- */
+
+.panel-head { margin-bottom: 24px; }
+
+.panel-title { margin: 0 0 6px; font-size: clamp(22px, 3vw, 30px); }
+
+.panel-blurb { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+.panel-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 24px; }
+
+.panel-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.panel-list-label { min-width: 0; overflow-wrap: anywhere; }
+
+.panel-list-edit { flex: none; color: var(--accent-3); font-weight: 600; font-size: 13px; }
+
+.panel-list-empty { color: var(--text-muted); }
+
+.panel-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+
+.panel-delete { margin-top: 16px; }
+
+.panel-fallback {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-fallback:hover { color: var(--text); }
+
+.panel-notice {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--accent-3);
+  border-radius: 8px;
+  background: rgba(124, 92, 255, 0.12);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.panel-notice-error {
+  border-color: var(--danger, #ff5c5c);
+  background: rgba(255, 92, 92, 0.12);
+}
+
+/* ---------- Docked panel (JS-enhanced only) ---------- */
+
+.edit-panel {
+  position: fixed;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  overscroll-behavior: contain;
+}
+
+.edit-panel[hidden] { display: none; }
+
+.edit-panel.is-busy { opacity: 0.6; }
+
+.panel-form .btn[disabled] {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.edit-panel-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.edit-panel-bar-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-head, inherit);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.edit-panel-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.edit-panel-close:hover,
+.edit-panel-close:focus-visible {
+  color: var(--text);
+  border-color: var(--accent-3);
+  outline: none;
+}
+
+.edit-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 24px 18px 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* The panel reuses the manage-screen form styles, minus the page-level card. */
+.edit-panel-body .panel-title { font-size: 20px; }
+.edit-panel-body .panel-head { margin-bottom: 18px; }
+.edit-panel-body input,
+.edit-panel-body select,
+.edit-panel-body textarea { max-width: 100%; }
+.edit-panel-body .upload-preview { max-width: 100%; height: auto; }
+
+/* Docked: a real column beside the page, not an overlay. */
+@media (min-width: 1024px) {
+  .edit-panel {
+    top: 0;
+    right: 0;
+    width: 420px;
+    height: 100vh;
+    border-width: 0 0 0 1px;
+  }
+
+  body.edit-mode.panel-open main,
+  body.edit-mode.panel-open .nav,
+  body.edit-mode.panel-open .site-footer { margin-right: 420px; }
+
+  body.edit-mode.panel-open main { transition: margin-right 0.2s ease; }
+}
+
+/* Tablet: an overlay sheet — the page keeps its full width behind it. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .edit-panel {
+    top: 0;
+    right: 0;
+    width: 60%;
+    max-width: 100vw;
+    height: 100vh;
+    border-width: 0 0 0 1px;
+  }
+}
+
+/* Phone: bottom sheet, page still visible above it. */
+@media (max-width: 767px) {
+  .edit-panel {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 85vh;
+    height: 85vh;
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .edit-panel-body { padding: 18px 16px 32px; }
+}
+
+@media (max-width: 720px) {
+  .edit-badge { top: -12px; font-size: 11px; padding: 4px 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.edit-mode [data-edit-key],
+  .edit-panel-close { transition: none; }
+
+  body.edit-mode.panel-open main { transition: none; }
+}

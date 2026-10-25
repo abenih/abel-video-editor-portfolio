@@ -6,7 +6,7 @@
       <p>{{ profile.tagline }}</p>
     </div>
 
-    <div class="footer-contact">
+    <div class="footer-contact" {% editable 'contact' %}>
       <a href="mailto:{{ profile.email }}" class="contact-line"><span class="contact-badge">✉</span>{{ profile.email }}</a>
       <a href="tel:{{ profile.phone }}" class="contact-line"><span class="contact-badge">☎</span>{{ profile.phone }}</a>
       <span class="contact-line"><span class="contact-badge">📍</span>{{ profile.location }}</span>

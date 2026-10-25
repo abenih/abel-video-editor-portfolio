@@ -128,7 +128,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Overridable so the server can put these outside /home, which nginx's www-data
+# worker cannot traverse (mode 750). Defaults keep local development unchanged.
+STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT') or BASE_DIR / 'staticfiles'
 
 STORAGES = {
     'default': {
@@ -150,16 +152,27 @@ LOGIN_URL = 'portfolio:login'
 LOGIN_REDIRECT_URL = 'portfolio:home'
 
 MEDIA_URL= '/media/'
-MEDIA_ROOT=BASE_DIR / 'BOOKS' 
+MEDIA_ROOT = os.environ.get('DJANGO_MEDIA_ROOT') or BASE_DIR / 'media'
+
+# WhiteNoise autorefresh re-stats files per request, so media uploaded after start-up is
+# served without a restart. Off by default outside DEBUG: it also picks up directory
+# junctions/symlinks planted under MEDIA_ROOT, which WhiteNoise follows out of the root.
+WHITENOISE_AUTOREFRESH = os.environ.get('DJANGO_WHITENOISE_AUTOREFRESH', str(DEBUG)) == 'True'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# Allow reasonably large video uploads from the portfolio owner.
-DATA_UPLOAD_MAX_MEMORY_SIZE = 300 * 1024 * 1024
+# Bounds the non-file part of a request body only; uploaded video/image parts are
+# streamed separately and capped by ProjectForm.clean_video_file instead.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 # Hardening that only matters (and is only safe to force) once served over real HTTPS.
 if not DEBUG:
+    # Behind nginx/Caddy, TLS is terminated at the proxy and forwarded as plain HTTP.
+    # Without this, SECURE_SSL_REDIRECT never sees https and loops forever.
+    # Only trust it when the proxy is known to always set the header itself.
+    if os.environ.get('DJANGO_BEHIND_TLS_PROXY', 'False') == 'True':
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

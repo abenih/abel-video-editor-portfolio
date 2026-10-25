@@ -7,15 +7,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
-from .forms import (
-    ExperienceForm, ProjectForm, SiteProfileForm, SkillGroupForm, SkillItemFormSet, StatForm, ToolForm,
-)
+from .editing import EDIT_REGIONS, build_form, build_formset, get_region
+from .forms import ProjectForm, SiteProfileForm, SkillGroupForm, SkillItemFormSet
 from .models import ExperienceEntry, Project, SiteProfile, SkillGroup, Stat, Tool
-
-from .forms import ProjectForm
-from .models import ExperienceEntry, Project, SkillGroup, Stat, Tool
 
 
 def owner_required(view_func):
@@ -35,14 +34,13 @@ def home(request):
         'tools': Tool.objects.all(),
         'skills': SkillGroup.objects.prefetch_related('items').all(),
         'experience': ExperienceEntry.objects.filter(is_visible=True),
-        'projects': Project.objects.all(),
-        'categories': Project.CATEGORY_CHOICES,
+        'projects': Project.objects.prefetch_related('videos'),
     }
     return render(request, 'portfolio/home.html', context)
 
 
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk)
+    project = get_object_or_404(Project.objects.prefetch_related('videos', 'gallery'), pk=pk)
     return render(request, 'portfolio/project_detail.html', {'project': project})
 
 
@@ -104,19 +102,16 @@ def manage_profile(request):
     return render(request, 'portfolio/manage_profile_form.html', {'form': form})
 
 
+# Derived from the edit-region registry so stats/tools/experience are defined exactly once.
 SIMPLE_CONTENT = {
-    'stats': {
-        'model': Stat, 'form': StatForm, 'label': 'Stats', 'singular': 'Stat',
-        'help_text': 'Small headline numbers shown in the hero, e.g. "3+ Years Editing".',
-    },
-    'tools': {
-        'model': Tool, 'form': ToolForm, 'label': 'Tools', 'singular': 'Tool',
-        'help_text': 'Software badges shown in the Tools & Skills section.',
-    },
-    'experience': {
-        'model': ExperienceEntry, 'form': ExperienceForm, 'label': 'Experience', 'singular': 'Experience entry',
-        'help_text': 'Rows shown in the Experience timeline.',
-    },
+    key: {
+        'model': region.model,
+        'form': region.form_class,
+        'label': region.list_label,
+        'singular': region.singular,
+        'help_text': region.blurb,
+    }
+    for key, region in EDIT_REGIONS.items() if region.simple_content
 }
 
 
@@ -142,7 +137,7 @@ def manage_content_edit(request, key, pk=None):
     config = _content_config(key)
     instance = get_object_or_404(config['model'], pk=pk) if pk else None
     if request.method == 'POST':
-        form = config['form'](request.POST, instance=instance)
+        form = config['form'](request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
             messages.success(request, 'Saved.')
@@ -210,6 +205,104 @@ def manage_skill_delete(request, pk):
     group.delete()
     messages.success(request, 'Skill group removed.')
     return redirect('portfolio:manage_skills')
+
+
+PANEL_FRAGMENT_TEMPLATE = 'portfolio/manage/_panel.html'
+PANEL_PAGE_TEMPLATE = 'portfolio/manage/panel_page.html'
+
+
+def _panel_template(request):
+    """Same context either way: the fragment for the drawer, a full page otherwise."""
+    return PANEL_FRAGMENT_TEMPLATE if request.headers.get('X-Panel') == '1' else PANEL_PAGE_TEMPLATE
+
+
+def _panel_next_url(request, region, instance=None):
+    """Where Save/Cancel lands. Only same-origin targets are honoured."""
+    candidate = request.POST.get('next') or request.GET.get('next')
+    if candidate and url_has_allowed_host_and_scheme(
+        candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return candidate
+    if region.kind == 'instance' and hasattr(instance, 'get_absolute_url'):
+        return instance.get_absolute_url()
+    return f"{reverse('portfolio:home')}#{region.anchor}"
+
+
+def _full_editor_url(region, instance):
+    if not region.fallback_url:
+        return ''
+    args = [instance.pk] if region.fallback_takes_pk and instance is not None else region.fallback_args
+    return reverse(region.fallback_url, args=args)
+
+
+def _panel_mode(request, region, pk):
+    if region.kind == 'profile' or pk is not None:
+        return 'edit'
+    if request.resolver_match and request.resolver_match.url_name == 'edit_panel_new':
+        return 'add'
+    return 'index'
+
+
+@owner_required
+@never_cache
+def edit_panel(request, key, pk=None):
+    region = get_region(key)
+    if region.kind == 'instance' and pk is None:
+        raise Http404('This region always edits one specific item.')
+    if pk is not None and region.model is None:
+        raise Http404('This region is not a list of items.')
+    mode = _panel_mode(request, region, pk)
+
+    # Model comes from the registry and pk from the <int:pk> converter, so an
+    # attacker can neither pick the table nor reach outside it.
+    instance = get_object_or_404(region.model, pk=pk) if pk is not None else None
+    next_url = _panel_next_url(request, region, instance)
+    context = {
+        'region': region,
+        'mode': mode,
+        'next_url': next_url,
+        'full_editor_url': _full_editor_url(region, instance),
+    }
+
+    if mode == 'index':
+        context['items'] = region.model.objects.all()
+        return render(request, _panel_template(request), context)
+
+    context['instance'] = instance
+    context['can_delete'] = region.kind in ('collection', 'nested') and instance is not None
+
+    if request.method == 'POST':
+        form = build_form(region, instance=instance, data=request.POST, files=request.FILES)
+        formset = build_formset(
+            region, instance=instance, data=request.POST, files=request.FILES,
+        ) if instance else None
+        if (form is None or form.is_valid()) and (formset is None or formset.is_valid()):
+            saved = form.save() if form is not None else instance
+            if formset is not None:
+                formset.save()
+            messages.success(request, f'{region.label} — saved.')
+            if region.kind == 'nested' and instance is None:
+                return redirect('portfolio:edit_panel_item', key=region.key, pk=saved.pk)
+            return redirect(next_url)
+    else:
+        form = build_form(region, instance=instance)
+        formset = build_formset(region, instance=instance) if instance else None
+
+    context['form'] = form
+    context['formset'] = formset
+    return render(request, _panel_template(request), context)
+
+
+@owner_required
+@require_POST
+def edit_panel_delete(request, key, pk):
+    region = get_region(key)
+    if region.kind not in ('collection', 'nested'):
+        raise Http404('This region has nothing to delete.')
+    instance = get_object_or_404(region.model, pk=pk)
+    instance.delete()
+    messages.success(request, 'Removed.')
+    return redirect(_panel_next_url(request, region))
 
 
 def portfolio_login(request):

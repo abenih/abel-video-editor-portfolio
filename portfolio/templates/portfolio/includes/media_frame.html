@@ -1,0 +1,32 @@
+{% comment %}
+One preview surface, used by the project cards, the lightbox, the detail page and
+the About panel so they all share the single-active controller in main.js.
+
+Caller supplies:
+  video   a ProjectVideo (SiteProfile.about_video is one too)
+  kind    'file' | 'iframe' | ''   — what activating this frame mounts
+  src     the player URL for `kind == 'iframe'` (already rebuilt from an id server-side)
+  hover   truthy to let the pointer start it; omit for click-to-play only
+  poster  optional override for the still image
+  label   optional accessible name for the play button
+{% endcomment %}
+{% firstof poster video.poster_url as still %}
+<div class="media-frame {{ video.aspect_class }}"
+     {% if kind %}data-preview-kind="{{ kind }}"{% endif %}
+     {% if kind == 'iframe' %}data-preview-src="{{ src }}" data-preview-origin="{{ video.preview_origin }}"{% endif %}
+     {% if hover and kind %}data-hover="1"{% endif %}>
+  {% if still %}<img class="media-poster" src="{{ still }}" alt="" loading="lazy">{% endif %}
+  {% if kind == 'file' %}
+    {% comment %}muted/playsinline are parsed attributes on purpose — Safari gates inline autoplay on them.{% endcomment %}
+    <video class="media-native" playsinline preload="none"
+           {% if hover %}muted loop{% else %}controls{% endif %}
+           {% if still %}poster="{{ still }}"{% endif %}>
+      <source src="{{ video.video_file.url }}">
+    </video>
+  {% endif %}
+  {% if kind %}
+  <button type="button" class="play-badge" aria-label="Play {{ label|default:'video' }}">
+    <span aria-hidden="true">&#9654;</span>
+  </button>
+  {% endif %}
+</div>

@@ -9,7 +9,7 @@
 
     {% include 'portfolio/includes/manage_nav.html' with active=key %}
 
-    <form method="post" novalidate>
+    <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
       {% if form.non_field_errors %}
         <div class="form-errors">{{ form.non_field_errors }}</div>

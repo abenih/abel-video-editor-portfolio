@@ -1,9 +1,13 @@
+{% load portfolio_extras %}
 <header class="nav" id="siteNav">
   <div class="nav-inner">
-    <a href="{% url 'portfolio:home' %}" class="brand">
-      <span class="brand-mark">AS</span>
-      <span class="brand-name">{{ profile.alias|default:profile.name }}</span>
-    </a>
+    {% comment %}Wrapper so the edit badge is a sibling of the brand link, never nested inside it.{% endcomment %}
+    <div class="brand-wrap" {% editable 'identity' %}>
+      <a href="{% url 'portfolio:home' %}" class="brand">
+        <span class="brand-mark">AS</span>
+        <span class="brand-name">{{ profile.alias|default:profile.name }}</span>
+      </a>
+    </div>
 
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
       <span></span><span></span><span></span>
@@ -15,6 +19,9 @@
       <a href="{% url 'portfolio:home' %}#skills">Skills</a>
       <a href="{% url 'portfolio:home' %}#contact">Contact</a>
       {% if request.user.is_authenticated and request.user.is_staff %}
+        <button type="button" class="btn btn-ghost btn-small edit-toggle" id="editModeToggle" aria-pressed="false" hidden>Edit this page</button>
+        {% comment %}Colours belong to no one section, so they get a toolbar entry that is its own edit link.{% endcomment %}
+        <a href="{% url 'portfolio:edit_panel' 'theme' %}" class="edit-tool" {% editable 'theme' %}>Site colours</a>
         <a href="{% url 'portfolio:upload_project' %}" class="btn btn-accent btn-small">+ Upload Project</a>
         <a href="{% url 'portfolio:manage_projects' %}">Manage</a>
         <form action="{% url 'portfolio:logout' %}" method="post" class="inline-form">

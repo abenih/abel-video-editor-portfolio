@@ -42,12 +42,12 @@ os.environ['DJANGO_DEBUG'] = 'False'
 os.environ['DJANGO_ALLOWED_HOSTS'] = '<PA_USERNAME>.pythonanywhere.com'
 os.environ['DJANGO_CSRF_TRUSTED_ORIGINS'] = 'https://<PA_USERNAME>.pythonanywhere.com'
 
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+from sandbox.wsgi import application
 
 6. Configure static and media mappings in Web tab
 - URL: /static/  Directory: /home/<PA_USERNAME>/abel-video-editor-portfolio/staticfiles
-- URL: /media/   Directory: /home/<PA_USERNAME>/abel-video-editor-portfolio/BOOKS
+- URL: /media/   Directory: /home/<PA_USERNAME>/abel-video-editor-portfolio/media
+- These mappings are served by PythonAnywhere itself, so requests for /media/ never reach the app. Leave DJANGO_WHITENOISE_AUTOREFRESH unset here.
 
 7. Reload site
 - Click Reload in Web tab
@@ -56,7 +56,12 @@ application = get_wsgi_application()
 - https://<PA_USERNAME>.pythonanywhere.com
 
 Notes
-- This project stores uploaded media under BOOKS, so /media/ must map to the BOOKS folder.
+- Import `application` from `sandbox.wsgi` (not `get_wsgi_application()` directly) — that module wraps the app in WhiteNoise so uploaded media under /media/ is served even with DEBUG=False.
+- This project stores uploaded media under the media folder, so the /media/ mapping must point there.
+- `DJANGO_WHITENOISE_AUTOREFRESH` controls whether WhiteNoise re-checks the filesystem on every request. It defaults to on with `DJANGO_DEBUG=True` and off otherwise.
+  - On PythonAnywhere, keep it off: the /media/ mapping above serves uploads directly, so new files appear immediately without it.
+  - On a host with no platform-level /media/ mapping (WhiteNoise is doing the serving), set `os.environ['DJANGO_WHITENOISE_AUTOREFRESH'] = 'True'` alongside the other variables in the WSGI file, otherwise newly uploaded images 404 until the process is restarted.
+  - The trade-off: WhiteNoise follows a directory symlink or junction inside the media folder out of that folder. With autorefresh off it only picks up links that already existed when the process started; with it on, links planted at any time are served. Only turn it on where nothing untrusted can write into that folder.
 - If you edit content locally and want it online, commit and push changes, then pull on PythonAnywhere:
   - cd ~/abel-video-editor-portfolio
   - git pull

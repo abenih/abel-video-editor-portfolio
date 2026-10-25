@@ -9,7 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'portfolio/css/style.css' %}">
-<style>
+{% if request.user.is_authenticated and request.user.is_staff %}
+<link rel="stylesheet" href="{% static 'portfolio/css/editor.css' %}">
+{% endif %}
+<style data-theme-vars>
   :root {
     --bg: {{ profile.theme_bg }};
     --bg-alt: {{ profile.theme_bg_alt }};
@@ -39,6 +42,9 @@
 
 {% include 'portfolio/includes/footer.html' %}
 <script src="{% static 'portfolio/js/main.js' %}"></script>
+{% if request.user.is_authenticated and request.user.is_staff %}
+<script src="{% static 'portfolio/js/editor.js' %}" data-panel-url-template="{% url 'portfolio:edit_panel' '__key__' %}"></script>
+{% endif %}
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

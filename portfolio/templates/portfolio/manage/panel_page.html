@@ -1,0 +1,11 @@
+{% extends 'portfolio/base.html' %}
+
+{% block title %}{{ region.label }} — {{ profile.name }}{% endblock %}
+
+{% block content %}
+<section class="form-page">
+  <div class="form-card">
+    {% include 'portfolio/manage/_panel.html' %}
+  </div>
+</section>
+{% endblock %}

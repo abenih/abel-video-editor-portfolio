@@ -11,7 +11,7 @@
 <section class="hero" id="top">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-inner">
-    <div class="hero-text">
+    <div class="hero-text" {% editable 'hero_text' %}>
       <p class="eyebrow reveal">{{ profile.location }} · {{ profile.availability_text }}</p>
       <h1 class="reveal">{{ profile.title }}</h1>
       <p class="hero-lead reveal">{{ profile.tagline }}</p>
@@ -19,7 +19,7 @@
         <a href="#work" class="btn btn-accent">{{ profile.hero_primary_cta_label }}</a>
         <a href="#contact" class="btn btn-ghost">{{ profile.hero_secondary_cta_label }}</a>
       </div>
-      <div class="hero-stats reveal">
+      <div class="hero-stats reveal" {% editable 'stats' %}>
         {% for stat in stats %}
         <div class="stat">
           <span class="stat-icon">{% icon stat.icon %}</span>
@@ -29,7 +29,7 @@
         {% endfor %}
       </div>
     </div>
-    <div class="hero-photo reveal">
+    <div class="hero-photo reveal" {% editable 'hero_images' %}>
       <div class="hero-photo-ring"></div>
       <div class="hero-cutout">
         {% if profile.hero_cutout_image %}
@@ -63,7 +63,7 @@
   </div>
 
   <div class="about-grid">
-    <div class="about-content reveal">
+    <div class="about-content reveal" {% editable 'about_text' %}>
       <p class="about-text">{{ profile.bio }}</p>
       <p class="about-quote">{% icon 'check' 'quote-icon' %}{{ profile.highlight }}</p>
       <div class="fact-chips">
@@ -71,7 +71,7 @@
         <span class="fact-chip">{% icon 'clock' %}Editing since {{ profile.since }}</span>
         <span class="fact-chip">{% icon 'check' %}{{ profile.availability_text }}</span>
       </div>
-      <div class="about-photo-stack" aria-label="Editor portraits">
+      <div class="about-photo-stack" aria-label="Editor portraits" {% editable 'about_images' %}>
         <figure class="about-photo-card about-photo-main">
           {% if profile.about_main_image %}
             <img src="{{ profile.about_main_image.url }}?v={{ profile.updated_at|date:'U' }}" alt="{{ profile.name }}" loading="lazy">
@@ -88,8 +88,11 @@
         </figure>
       </div>
     </div>
-    <div class="about-visual reveal">
+    <div class="about-visual reveal" {% editable 'about_video' %}>
       <div class="about-panel">
+        {% if profile.about_video %}
+          {% include 'portfolio/includes/media_frame.html' with video=profile.about_video kind=profile.about_video.preview_kind src=profile.about_video.preview_embed_url hover=1 poster=None label='the About Me video' %}
+        {% else %}
         <svg class="about-illustration" viewBox="0 0 320 300" aria-hidden="true">
           <circle class="float-slow" cx="30" cy="40" r="6" fill="var(--accent-3)" opacity="0.6"/>
           <circle class="float-med" cx="292" cy="66" r="9" fill="var(--accent-2)" opacity="0.5"/>
@@ -108,6 +111,7 @@
           <rect x="160" y="246" width="30" height="12" rx="3" fill="var(--accent-3)"/>
           <rect x="196" y="246" width="70" height="12" rx="3" fill="var(--accent)" opacity="0.6"/>
         </svg>
+        {% endif %}
         <div class="about-panel-chips">
           <span class="mini-chip">{% icon 'video' %}Video Editing</span>
           <span class="mini-chip">{% icon 'design' %}Graphic Design</span>
@@ -129,17 +133,21 @@
     <svg class="tools-flow" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 20 Q 75 0, 150 20 T 300 20 T 450 20 T 600 20" />
     </svg>
-    <div class="tools-grid">
+    <div class="tools-grid" {% editable 'tools' %}>
       {% for tool in tools %}
       <div class="tool-badge reveal">
-        <span class="tool-icon" style="background:{{ tool.bg }}; color:{{ tool.fg }};">{{ tool.abbr }}</span>
+        {% if tool.icon_image %}
+          <span class="tool-icon tool-icon-image"><img src="{{ tool.icon_image.url }}" alt="" loading="lazy"></span>
+        {% else %}
+          <span class="tool-icon" style="background:{{ tool.bg }}; color:{{ tool.fg }};">{{ tool.abbr }}</span>
+        {% endif %}
         <span class="tool-name">{{ tool.name }}</span>
       </div>
       {% endfor %}
     </div>
   </div>
 
-  <div class="skills-grid">
+  <div class="skills-grid" {% editable 'skills' %}>
     {% for group in skills %}
     <div class="skill-card reveal">
       <span class="skill-watermark" aria-hidden="true">{% icon group.icon %}</span>
@@ -165,30 +173,39 @@
   </div>
 
   {% if projects %}
-  <div class="filter-tabs reveal" role="tablist">
-    <button class="filter-tab active" data-filter="all" type="button">{% icon 'all' 'tab-icon' %}All</button>
-    {% for value, label in categories %}
-      <button class="filter-tab" data-filter="{{ value }}" type="button">{% icon value 'tab-icon' %}{{ label }}</button>
-    {% endfor %}
-  </div>
-
-  <div class="project-grid">
+  <div class="project-grid" {% editable 'projects' %}>
     {% for project in projects %}
-    <a href="{% url 'portfolio:project_detail' project.pk %}" class="project-card reveal" data-category="{{ project.category }}">
-      <div class="project-thumb">
-        {% if project.display_thumbnail_url %}
-          <img src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}" loading="lazy">
-        {% else %}
-          <div class="project-thumb-fallback">{% icon project.category 'fallback-icon' %}{{ project.get_category_display }}</div>
-        {% endif %}
-        {% if project.has_playable_media %}<span class="play-badge">▶</span>{% endif %}
-        {% if project.is_featured %}<span class="badge-featured">Featured</span>{% endif %}
-      </div>
-      <div class="project-meta">
-        <h3>{{ project.title }}</h3>
-        <span class="project-category">{% icon project.category 'tag-icon' %}{{ project.get_category_display }}</span>
-      </div>
-    </a>
+    <article class="project-card reveal" data-category="{{ project.category }}" data-title="{{ project.title }}">
+      {% comment %}A real link, so no-JS and deep links still reach the page. main.js
+      swallows the click and expands the collection in place instead.{% endcomment %}
+      <a href="{% url 'portfolio:project_detail' project.pk %}" class="project-card-link">
+        <div class="project-thumb">
+          {% if project.cover_video %}
+            {% include 'portfolio/includes/media_frame.html' with video=project.cover_video kind=project.cover_video.preview_kind src=project.cover_video.preview_embed_url hover=1 poster=project.display_thumbnail_url label=project.title %}
+          {% elif project.display_thumbnail_url %}
+            <img src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}" loading="lazy">
+          {% else %}
+            <div class="project-thumb-fallback">{% icon project.category_icon 'fallback-icon' %}{{ project.display_category }}</div>
+          {% endif %}
+          {% if project.is_featured %}<span class="badge-featured">Featured</span>{% endif %}
+        </div>
+        <div class="project-meta">
+          <h3>{{ project.title }}</h3>
+          <span class="project-category">{% icon project.category_icon 'tag-icon' %}{{ project.display_category }}</span>
+        </div>
+      </a>
+      {% if project.videos.all %}
+      {% comment %}Inert until cloned: a <template>'s posters and iframes are never fetched.{% endcomment %}
+      <template class="card-videos">
+        {% for video in project.videos.all %}
+        <figure class="video-collection-item">
+          {% include 'portfolio/includes/media_frame.html' with video=video kind=video.play_kind src=video.embed_url hover=0 poster=None label=video.title|default:project.title %}
+          <figcaption>{{ video.title|default:project.title }}</figcaption>
+        </figure>
+        {% endfor %}
+      </template>
+      {% endif %}
+    </article>
     {% endfor %}
   </div>
   {% else %}
@@ -201,6 +218,18 @@
     {% endif %}
   </div>
   {% endif %}
+
+  {% comment %}Deliberately outside {% editable 'projects' %} so a region swap never takes it away.{% endcomment %}
+  <div class="lightbox" id="mediaLightbox" hidden>
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle">
+      <div class="lightbox-head">
+        <h2 class="lightbox-title" id="lightboxTitle"></h2>
+        <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close">&#10005;</button>
+      </div>
+      <div class="lightbox-body video-collection"></div>
+    </div>
+  </div>
 </section>
 
 {% if profile.show_experience_section and experience %}
@@ -209,7 +238,7 @@
     <span class="ghost-number" aria-hidden="true">04</span>
     <h2>Experience{% include 'portfolio/includes/title_underline.html' %}</h2>
   </div>
-  <div class="timeline">
+  <div class="timeline" {% editable 'experience' %}>
     {% for job in experience %}
     <div class="timeline-item reveal">
       <div class="timeline-dot">{% icon 'briefcase' %}</div>

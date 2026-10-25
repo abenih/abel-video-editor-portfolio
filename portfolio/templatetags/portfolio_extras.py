@@ -4,8 +4,17 @@ Keeping icons as plain data here means the templates stay declarative
 (`{% icon 'video' %}`) and every icon shares one consistent, dependency-free
 source instead of duplicated inline SVG blocks or an external icon font.
 """
-from django import template
+import logging
+
+from django import forms, template
+from django.conf import settings
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
+
+from portfolio.editing import EDIT_REGIONS
+from portfolio.models import category_icon_for
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -64,3 +73,54 @@ def icon(name, css_class=''):
     if css_class:
         svg = svg.replace('<svg ', f'<svg class="{css_class}" ', 1)
     return mark_safe(svg)
+
+
+@register.filter
+def category_icon(label):
+    """Icon key for a free-text category label, or '' when nothing matches."""
+    return category_icon_for(label)
+
+
+@register.filter
+def preview_kind(bound_field):
+    """'image' | 'video' | '' — how the edit panel should preview an uploaded file.
+
+    A form can declare PREVIEW_KINDS to be explicit; otherwise anything Django
+    already knows is a picture previews as one, and everything else (an .mp4,
+    say) previews as nothing rather than as a broken <img>.
+    """
+    declared = getattr(bound_field.form, 'PREVIEW_KINDS', {}).get(bound_field.name)
+    if declared:
+        return declared
+    return 'image' if isinstance(bound_field.field, forms.ImageField) else ''
+
+
+@register.simple_tag(takes_context=True)
+def editable(context, key, pk=None):
+    """Marks an element as a click-to-edit region — for staff only.
+
+    ``pk`` names the one object this part of the page is showing, e.g.
+    ``{% editable 'project' project.pk %}``. It only ever selects a row inside
+    the model the registry already fixed for that key.
+
+    Emits nothing at all for everyone else, so the public HTML is byte-identical
+    and there is no hidden affordance to un-hide. This is a nicety on top of
+    @owner_required on the panel views, never the access control itself.
+    """
+    if key not in EDIT_REGIONS:
+        message = f'{{% editable %}} got an unknown region key "{key}".'
+        if settings.DEBUG:
+            raise template.TemplateSyntaxError(message)
+        logger.warning(message)
+        return ''
+
+    request = context.get('request')
+    user = getattr(request, 'user', None)
+    if not (user and user.is_authenticated and user.is_staff):
+        return ''
+
+    # key is a registry slug, not request data, so it needs no further escaping.
+    attrs = f'data-edit-key="{key}" data-edit-label="{escape(EDIT_REGIONS[key].label.lower())}"'
+    if pk is not None:
+        attrs += f' data-edit-pk="{escape(pk)}"'
+    return mark_safe(attrs)

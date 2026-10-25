@@ -18,6 +18,14 @@ urlpatterns = [
     path('manage/skills/add/', views.manage_skill_add, name='manage_skill_add'),
     path('manage/skills/<int:pk>/edit/', views.manage_skill_edit, name='manage_skill_edit'),
     path('manage/skills/<int:pk>/delete/', views.manage_skill_delete, name='manage_skill_delete'),
+
+    # Must stay above the generic manage/<str:key>/ block below, which would
+    # otherwise swallow /manage/edit/... as key="edit".
+    path('manage/edit/<slug:key>/', views.edit_panel, name='edit_panel'),
+    path('manage/edit/<slug:key>/new/', views.edit_panel, name='edit_panel_new'),
+    path('manage/edit/<slug:key>/<int:pk>/', views.edit_panel, name='edit_panel_item'),
+    path('manage/edit/<slug:key>/<int:pk>/delete/', views.edit_panel_delete, name='edit_panel_delete'),
+
     path('manage/<str:key>/', views.manage_content_list, name='manage_content_list'),
     path('manage/<str:key>/add/', views.manage_content_edit, name='manage_content_add'),
     path('manage/<str:key>/<int:pk>/edit/', views.manage_content_edit, name='manage_content_edit'),
