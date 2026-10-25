@@ -3,6 +3,7 @@ from urllib.parse import urlsplit
 from django import forms
 from django.core.validators import URLValidator
 
+from .imaging import optimize_image
 from .models import (
     ExperienceEntry, Project, ProjectImage, ProjectVideo, SiteProfile, SkillGroup, SkillItem, Stat, Tool,
     extract_tiktok_id, extract_vimeo_id, extract_youtube_id,
