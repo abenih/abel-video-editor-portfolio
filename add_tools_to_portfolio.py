@@ -68,6 +68,66 @@ PROJECTS_DATA = [
         "accent_color": (6, 182, 212),
         "tag": "OSINT & RECONNAISSANCE",
         "icon_label": "IPLOC"
+    },
+    {
+        "title": "AgentLedger — Cryptographic Action Attestation & Governance",
+        "category": "AI Safety & Governance",
+        "client": "Open Source / SatiraLabs",
+        "description": "Cryptographic action attestation, SHA-256 Merkle audit trail, and zero-trust execution guardrails for autonomous AI agent tool execution.",
+        "video_url": "https://github.com/abenih/agent-ledger",
+        "thumb_file": "projects/thumbnails/thumb_agent_ledger.png",
+        "bg_color": (17, 24, 39),
+        "accent_color": (59, 130, 246),
+        "tag": "AI SAFETY & MERKLE AUDIT",
+        "icon_label": "AGENTLEDGER"
+    },
+    {
+        "title": "DialectMesh — Edge Semantic Router for Low-Resource Languages",
+        "category": "Edge AI & NLP",
+        "client": "Open Source / SatiraLabs",
+        "description": "Offline-first edge semantic router & NLU engine for Amharic, Afaan Oromo, and Kiswahili mapping vernacular queries to structured tool dispatch.",
+        "video_url": "https://github.com/abenih/dialect-mesh",
+        "thumb_file": "projects/thumbnails/thumb_dialect_mesh.png",
+        "bg_color": (20, 26, 15),
+        "accent_color": (34, 197, 94),
+        "tag": "OFFLINE-FIRST NLU",
+        "icon_label": "DIALECTMESH"
+    },
+    {
+        "title": "SovereignSentinel — Verifiable OSINT & Fact Graph Engine",
+        "category": "OSINT & Civic Tech",
+        "client": "Open Source / SatiraLabs",
+        "description": "Verifiable OSINT and counter-disinformation knowledge graph engine with tamper-proof source lineage and belief propagation.",
+        "video_url": "https://github.com/abenih/sovereign-sentinel",
+        "thumb_file": "projects/thumbnails/thumb_sovereign_sentinel.png",
+        "bg_color": (24, 18, 33),
+        "accent_color": (168, 85, 247),
+        "tag": "PROVENANCE GRAPH",
+        "icon_label": "SENTINEL"
+    },
+    {
+        "title": "EdgeStream AI — Low-Resource Computer Vision & Event Trigger",
+        "category": "Edge Computer Vision",
+        "client": "Open Source / SatiraLabs",
+        "description": "Ultra-low-resource computer vision and motion activity engine running under 15MB RAM on edge CPUs with instant webhook alerts.",
+        "video_url": "https://github.com/abenih/edge-stream-ai",
+        "thumb_file": "projects/thumbnails/thumb_edge_stream_ai.png",
+        "bg_color": (28, 20, 14),
+        "accent_color": (245, 158, 11),
+        "tag": "ZERO-GPU STREAM CV",
+        "icon_label": "EDGESTREAM"
+    },
+    {
+        "title": "ProvableFair AI — Algorithmic Fairness & Audit Sandbox",
+        "category": "Algorithmic Transparency",
+        "client": "Open Source / SatiraLabs",
+        "description": "Algorithmic fairness evaluation sandbox and cryptographic commit-reveal verification framework for digital decision systems.",
+        "video_url": "https://github.com/abenih/provable-fair-ai",
+        "thumb_file": "projects/thumbnails/thumb_provable_fair_ai.png",
+        "bg_color": (14, 28, 36),
+        "accent_color": (6, 182, 212),
+        "tag": "MATHEMATICAL FAIRNESS",
+        "icon_label": "PROVABLEFAIR"
     }
 ]
 
@@ -87,12 +147,12 @@ def create_thumbnail(item):
     draw.rounded_rectangle([(16, 16), (w - 16, h - 16)], radius=16, outline=acc + (120,), width=2)
 
     # Badge pill top-left
-    draw.rounded_rectangle([(40, 40), (280, 72)], radius=8, fill=acc + (40,), outline=acc + (180,), width=1)
+    draw.rounded_rectangle([(40, 40), (320, 72)], radius=8, fill=acc + (40,), outline=acc + (180,), width=1)
     draw.text((54, 48), item["tag"], fill=acc + (255,))
 
     # Main Card Symbol
-    draw.rounded_rectangle([(w // 2 - 120, h // 2 - 80), (w // 2 + 120, h // 2 + 30)], radius=20, fill=(0, 0, 0, 140), outline=acc + (160,), width=2)
-    draw.text((w // 2 - 60, h // 2 - 35), item["icon_label"], fill=(255, 255, 255, 240))
+    draw.rounded_rectangle([(w // 2 - 140, h // 2 - 80), (w // 2 + 140, h // 2 + 30)], radius=20, fill=(0, 0, 0, 140), outline=acc + (160,), width=2)
+    draw.text((w // 2 - 70, h // 2 - 35), item["icon_label"], fill=(255, 255, 255, 240))
 
     # Title bottom
     draw.text((40, h - 70), item["title"].split(" — ")[0], fill=(255, 255, 255, 240))
