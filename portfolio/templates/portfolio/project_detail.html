@@ -38,7 +38,12 @@
         <a href="{{ project.video_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-accent btn-small">Watch Video ↗</a>
       </div>
     {% elif project.display_thumbnail_url %}
-      <img class="detail-image" src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}">
+      <div style="display:flex; flex-direction:column; gap:16px; align-items:center;">
+        <img class="detail-image" src="{{ project.display_thumbnail_url }}" alt="{{ project.title }}">
+        {% if project.video_url %}
+          <a href="{{ project.video_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-accent">Explore on GitHub ↗</a>
+        {% endif %}
+      </div>
     {% else %}
       <div class="project-thumb-fallback large">{% icon project.category_icon 'fallback-icon' %}{{ project.display_category }}</div>
     {% endif %}

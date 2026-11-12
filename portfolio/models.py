@@ -61,6 +61,12 @@ CATEGORY_ICONS = {
     'branding': 'branding',
     'generative ai': 'ai',
     'ai': 'ai',
+    'software & ai': 'ai',
+    'software': 'ai',
+    'computer vision': 'ai',
+    'cybersecurity': 'check',
+    'mobile & systems': 'video',
+    'networking & osint': 'folder',
 }
 
 # Handles are pasted straight into https://instagram.com/<handle> etc. in the footer,
