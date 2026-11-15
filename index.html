@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Little Kingo — Video Editor Portfolio | A SatiraLabs Project</title>
+<meta name="description" content="Portfolio website for Abel Shemeles (Little Kingo), video editor and visual storyteller in Addis Ababa. Built and hosted by SatiraLabs.">
+<style>
+  :root{--bg:#070812;--violet:#6d28d9;--sky:#0ea5e9;--gold:#f2b33d;--text:#f3f3f7;--muted:#9a9aac}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 64px}
+  .pill{display:inline-block;padding:6px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);font-size:13px;color:var(--muted)}
+  h1{font-size:42px;line-height:1.15;margin:18px 0 8px} h2{font-size:24px;margin:36px 0 10px}
+  .grad{background:linear-gradient(90deg,#a78bfa,#38bdf8,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  p{color:#c9c9d4} .muted{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
+  .card{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:16px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:17px} .card p{margin:0;font-size:14px;color:#c9c9d4}
+  .btn{display:inline-block;margin-top:22px;margin-right:10px;padding:11px 22px;border-radius:999px;font-weight:600;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--violet),var(--sky))}
+  .btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2)}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:var(--muted)}
+  a{color:#7dd3fc}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="pill">A SatiraLabs project · Portfolio website</span>
+  <h1>Little Kingo <span class="grad">— Abel Shemeles</span></h1>
+  <p><strong>Video Editor &amp; Visual Storyteller</strong> · Addis Ababa, Ethiopia · Working since 2019</p>
+  <p>A dynamic portfolio and video-editor showcase website built with Django. It presents Abel's editing work — wedding films, concerts, events, podcasts and short-form video — with a project gallery, video embeds in portrait and landscape, and a click-to-edit CMS so the owner can update his bio, skills, categories and project cards directly on the page, without an admin panel.</p>
+
+  <h2>Selected work shown on the site</h2>
+  <div class="grid">
+    <div class="card"><h3>Wedding photo &amp; video</h3><p>Cinematic wedding films with colour grading, smooth transitions, audio sync and photo retouching.</p></div>
+    <div class="card"><h3>Rophnan — concert edit</h3><p>Energetic live-performance editing: beat-synced cuts, crowd highlights and cinematic grading.</p></div>
+    <div class="card"><h3>Events — MTS Multimedia</h3><p>Conferences, graduations and celebrations edited into polished, shareable event videos.</p></div>
+    <div class="card"><h3>Podcast &amp; short-form video</h3><p>Podcast episodes with subtitles and motion graphics, plus fast-paced TikTok, Reels and Shorts edits.</p></div>
+    <div class="card"><h3>Thumbnails &amp; AI visuals</h3><p>Custom thumbnails for Ani Tube and generative AI pictures and video frames for Ani Scripy.</p></div>
+    <div class="card"><h3>Game graphics</h3><p>Concept art and UI graphics for the Ethiopia GERD Defense game.</p></div>
+  </div>
+
+  <h2>About this page</h2>
+  <p class="muted">This is a lightweight showcase page — text only, no large video files or photos, so it loads fast anywhere. The full website is a Django application; its source code, including the preconfigured database with Abel's profile, projects and skills, is in the GitHub repository below. The site was previously hosted by SatiraLabs at littlekingo.duckdns.org.</p>
+
+  <a class="btn" href="https://github.com/abenih/abel-video-editor-portfolio">View the source on GitHub</a>
+  <a class="btn ghost" href="https://satiralabs.com/#portfolio">Back to SatiraLabs portfolio</a>
+
+  <footer>Little Kingo portfolio website — built and hosted by <a href="https://satiralabs.com/">SatiraLabs</a>.</footer>
+</div>
+</body>
+</html>
