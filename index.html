@@ -8,14 +8,20 @@
 <style>
   :root{--bg:#070812;--violet:#6d28d9;--sky:#0ea5e9;--gold:#f2b33d;--text:#f3f3f7;--muted:#9a9aac}
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
-  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 64px}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 64px}
   .pill{display:inline-block;padding:6px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);font-size:13px;color:var(--muted)}
-  h1{font-size:42px;line-height:1.15;margin:18px 0 8px} h2{font-size:24px;margin:36px 0 10px}
+  h1{font-size:42px;line-height:1.15;margin:16px 0 8px} h2{font-size:24px;margin:40px 0 6px}
   .grad{background:linear-gradient(90deg,#a78bfa,#38bdf8,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
   p{color:#c9c9d4} .muted{color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
-  .card{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:16px;padding:18px}
-  .card h3{margin:0 0 6px;font-size:17px} .card p{margin:0;font-size:14px;color:#c9c9d4}
+  .hero{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:center;margin-top:10px}
+  .hero img{width:100%;border-radius:20px;border:1px solid rgba(255,255,255,.16);display:block}
+  @media(max-width:720px){.hero{grid-template-columns:1fr} h1{font-size:34px}}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin-top:16px}
+  .card{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:16px;overflow:hidden}
+  .card img{width:100%;height:190px;object-fit:cover;display:block;background:#10101c}
+  .card .body{padding:14px 16px 16px} .card h3{margin:0 0 4px;font-size:16px} .card p{margin:0;font-size:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);font-size:13px}
   .btn{display:inline-block;margin-top:22px;margin-right:10px;padding:11px 22px;border-radius:999px;font-weight:600;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--violet),var(--sky))}
   .btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2)}
   footer{margin-top:48px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:var(--muted)}
@@ -25,22 +31,31 @@
 <body>
 <div class="wrap">
   <span class="pill">A SatiraLabs project · Portfolio website</span>
-  <h1>Little Kingo <span class="grad">— Abel Shemeles</span></h1>
-  <p><strong>Video Editor &amp; Visual Storyteller</strong> · Addis Ababa, Ethiopia · Working since 2019</p>
-  <p>A dynamic portfolio and video-editor showcase website built with Django. It presents Abel's editing work — wedding films, concerts, events, podcasts and short-form video — with a project gallery, video embeds in portrait and landscape, and a click-to-edit CMS so the owner can update his bio, skills, categories and project cards directly on the page, without an admin panel.</p>
+  <div class="hero">
+    <div>
+      <h1>Little Kingo <span class="grad">— Abel Shemeles</span></h1>
+      <p><strong>Video Editor &amp; Visual Storyteller</strong> · Addis Ababa, Ethiopia · Working since 2019</p>
+      <p>A dynamic portfolio website built with Django for video editor Abel Shemeles: wedding films, concerts, events, podcasts and short-form video, with a project gallery and a click-to-edit CMS so he updates his own bio, skills and project cards directly on the page — no admin panel needed.</p>
+      <div class="chips">
+        <span class="chip">Wedding films</span><span class="chip">Concert edits</span><span class="chip">Event coverage</span><span class="chip">Podcasts</span><span class="chip">TikTok / Reels / Shorts</span><span class="chip">Thumbnails</span><span class="chip">AI visuals</span><span class="chip">Game graphics</span>
+      </div>
+    </div>
+    <img src="img/profile.jpg" alt="Abel Shemeles, video editor" width="403" height="403">
+  </div>
 
-  <h2>Selected work shown on the site</h2>
+  <h2>Selected work</h2>
+  <p class="muted">Real project artwork from Abel's portfolio, kept small on purpose so the page loads fast.</p>
   <div class="grid">
-    <div class="card"><h3>Wedding photo &amp; video</h3><p>Cinematic wedding films with colour grading, smooth transitions, audio sync and photo retouching.</p></div>
-    <div class="card"><h3>Rophnan — concert edit</h3><p>Energetic live-performance editing: beat-synced cuts, crowd highlights and cinematic grading.</p></div>
-    <div class="card"><h3>Events — MTS Multimedia</h3><p>Conferences, graduations and celebrations edited into polished, shareable event videos.</p></div>
-    <div class="card"><h3>Podcast &amp; short-form video</h3><p>Podcast episodes with subtitles and motion graphics, plus fast-paced TikTok, Reels and Shorts edits.</p></div>
-    <div class="card"><h3>Thumbnails &amp; AI visuals</h3><p>Custom thumbnails for Ani Tube and generative AI pictures and video frames for Ani Scripy.</p></div>
-    <div class="card"><h3>Game graphics</h3><p>Concept art and UI graphics for the Ethiopia GERD Defense game.</p></div>
+    <div class="card"><img src="img/work2.jpg" alt="GERD Defense game artwork" loading="lazy"><div class="body"><h3>GERD Defense — game graphics</h3><p>Concept art, characters and UI graphics for the Ethiopia GERD Defense game (Geez Inc.).</p></div></div>
+    <div class="card"><img src="img/work3.jpg" alt="Music cover artwork" loading="lazy"><div class="body"><h3>Music cover art</h3><p>Cover design for a music release — portrait compositing over a stylised city skyline.</p></div></div>
+    <div class="card"><img src="img/work4.jpg" alt="MTS Multimedia logo" loading="lazy"><div class="body"><h3>MTS Multimedia — events</h3><p>Event coverage and branding for MTS Multimedia: conferences, graduations and celebrations.</p></div></div>
+    <div class="card"><img src="img/work5.jpg" alt="Ani Tube thumbnail design" loading="lazy"><div class="body"><h3>Ani Tube — thumbnails</h3><p>Bright, click-ready thumbnail design for the Ani Tube children's channel.</p></div></div>
+    <div class="card"><img src="img/work6.jpg" alt="Generative AI visual, Berry Farm scene" loading="lazy"><div class="body"><h3>Generative AI visuals</h3><p>AI-generated scenes and frames for Ani Scripy — a Berry Farm storybook world.</p></div></div>
+    <div class="card"><img src="img/work1.jpg" alt="Abel Shemeles graphic design poster" loading="lazy"><div class="body"><h3>Graphic design &amp; branding</h3><p>Poster and identity design, including Abel's own graphic-designer brand artwork.</p></div></div>
   </div>
 
   <h2>About this page</h2>
-  <p class="muted">This is a lightweight showcase page — text only, no large video files or photos, so it loads fast anywhere. The full website is a Django application; its source code, including the preconfigured database with Abel's profile, projects and skills, is in the GitHub repository below. The site was previously hosted by SatiraLabs at littlekingo.duckdns.org.</p>
+  <p class="muted">A visual showcase for the project, using Abel's own artwork in small, fast-loading sizes — no large video files. The full website is a Django application; its source code, including the preconfigured database with Abel's profile, projects and skills, is in the GitHub repository below. The site was previously hosted by SatiraLabs at littlekingo.duckdns.org.</p>
 
   <a class="btn" href="https://github.com/abenih/abel-video-editor-portfolio">View the source on GitHub</a>
   <a class="btn ghost" href="https://satiralabs.com/#portfolio">Back to SatiraLabs portfolio</a>
